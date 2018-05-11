@@ -11,7 +11,7 @@
 
 
 
-<title>Posts</title>
+<title>LSI Section 1.1</title>
 
 <script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -20,6 +20,7 @@
 <script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
 <script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
 <script src="site_libs/navigation-1.1/tabsets.js"></script>
+<script src="site_libs/navigation-1.1/codefolding.js"></script>
 <link href="site_libs/highlightjs-9.12.0/default.css" rel="stylesheet" />
 <script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
 
@@ -159,6 +160,14 @@ $(document).ready(function () {
 </script>
 
 <!-- code folding -->
+<style type="text/css">
+.code-folding-btn { margin-bottom: 4px; }
+</style>
+<script>
+$(document).ready(function () {
+  window.initializeCodeFolding("hide" === "show");
+});
+</script>
 
 
 
@@ -190,17 +199,78 @@ $(document).ready(function () {
 
 <div class="fluid-row" id="header">
 
+<div class="btn-group pull-right">
+<button type="button" class="btn btn-default btn-xs dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><span>Code</span> <span class="caret"></span></button>
+<ul class="dropdown-menu" style="min-width: 50px;">
+<li><a id="rmd-show-all-code" href="#">Show All Code</a></li>
+<li><a id="rmd-hide-all-code" href="#">Hide All Code</a></li>
+</ul>
+</div>
 
 
-<h1 class="title toc-ignore">Posts</h1>
+
+<h1 class="title toc-ignore">LSI Section 1.1</h1>
 
 </div>
 
 
-<ul>
-<li><a href="2018-05-10-lsi-1-1.html">LSI Section 1.1</a></li>
-<li><a href="2018-05-11-lsi-1-2.html">LSI section 1.2</a></li>
-</ul>
+<p><span class="math display">\[
+\mu \sim N(\theta, A) \\
+z|\mu \sim N(\mu, B)
+\]</span></p>
+<p><span class="math display">\[
+\begin{align*}
+f_{\mu|z} \propto &amp;\ f_{\mu}f_{z|\mu} \\
+\log f_{\mu|z} =&amp;\ \text{[stuff]} + \left\{ - \frac{1}{2} (\mu - \theta)^t A^{-1}(\mu-\theta)\right\} + \left\{-\frac{1}{2}(z-\mu)^tB^{-1}(z-\mu) \right\} \\
+&amp;\ \text{Note, we only care about terms involving } \mu\\
+&amp;\ \text{[stuff]} + \left\{ - \frac{1}{2} ({\color{red}\mu} - \theta)^t A^{-1}({\color{red}\mu}-\theta)\right\} + \left\{-\frac{1}{2}(z-{\color{red}\mu})^tB^{-1}(z-{\color{red}\mu}) \right\} \\
+&amp;\ \text{[more stuff]} -\frac{1}{2}\mu^tA^{-1}\mu + \mu^tA^{-1}\theta + \mu^tB^{-1}z - \frac{1}{2}\mu^tB^{-1}\mu\\
+&amp;\text{Group quadratic and linear terms}\\
+&amp; \text{[stuff]} -\frac{1}{2}\mu^t\left[A^{-1} + B^{-1}\right]\mu + \mu^t\left[A^{-1}\theta + B^{-1}z\right]\\
+&amp;\text{Multiply by the identity}\\
+&amp; \text{[stuff]} -\frac{1}{2}\mu^t\left[A^{-1} + B^{-1}\right]\mu + \mu^t\left[A^{-1} + B^{-1}\right]\underbrace{\left[A^{-1} + B^{-1}\right]^{-1}\left[A^{-1}\theta + B^{-1}z\right]}_{q}\\
+&amp; \text{[stuff]} -\frac{1}{2}\mu^t\left[A^{-1} + B^{-1}\right]\mu + \mu^t\left[A^{-1} + B^{-1}\right]q\\
+&amp; \text{[even more stuff not invovling}\ \mu] -\frac{1}{2}(\mu - q)^t\left[A^{-1} + B^{-1}\right](\mu - q)\\
+\mu|z \sim &amp; N(\left[A^{-1} + B^{-1}\right]^{-1}\left[A^{-1}\theta + B^{-1}z\right], [A^{-1} + B^{-1}]^{-1})
+\end{align*}
+\]</span></p>
+<p>When <span class="math inline">\(A = aI\)</span> and <span class="math inline">\(B = bI\)</span>, then <span class="math display">\[
+\mu|z \sim N\left(\frac{ab}{a+b}\left[\frac{1}{a}\theta + \frac{1}{b}z\right],\ \frac{ab}{a + b} \cdot I \right)
+\]</span></p>
+<p>If, as in the book, <span class="math inline">\(\theta = 0\)</span> and <span class="math inline">\(B = I\)</span>, then <span class="math display">\[
+\mu|z \sim N\left(\frac{a}{a+1}\cdot z,\ \frac{a}{a + 1} \cdot I \right)
+\]</span></p>
+<div id="posterior-when--is-e-a-is--and-b-is-the-golden-ratio" class="section level2">
+<h2>Posterior when θ is e, a is π, and b is the golden ratio</h2>
+<pre class="r"><code>set.seed(2345)
+theta &lt;- exp(1)
+a &lt;- pi
+b &lt;- (1 + sqrt(5))/2 #phi
+
+
+mu &lt;- rnorm(1, theta, sqrt(a))
+z &lt;- rnorm(1, mu, sqrt(b))
+
+mean &lt;- a*b/(a+b)*(theta/a + z/b)
+sigma &lt;- a*b/(a+b) %&gt;% sqrt
+
+plotstyle(style = upright)
+par(mar = c(2,2,2,1))
+curve(
+    dnorm(x, mean, sigma)
+  , from = mean - 3*sigma
+  , to = mean + 3*sigma
+  , ylab = &quot;&quot;
+  , xlab = &quot;&quot;
+  , lwd = 3
+)
+
+abline(v = c(z, theta), lwd = 2, col = &quot;darkblue&quot;)
+axis(3, at = c(z, theta), label = c(&quot;z&quot;, &quot;θ&quot;))
+abline(v = mean, col = &quot;red&quot;, lty = 2)
+axis(3, at = mean, label = &quot;E(μ|z)&quot;, line = 1, tcl = 0)</code></pre>
+<p><img src="2018-05-10-lsi-1-1_files/figure-html/unnamed-chunk-2-1.png" width="672" /></p>
+</div>
 
 
 

@@ -2,5 +2,5 @@
 title: Posts
 ---
 
-- [LSI Section 1.1](./posts/_site/2018-05-10-lsi-1-1.html)
-- [LSI section 1.2](./posts/_site/2018-05-11-lsi-1-2.html)
+- [LSI Section 1.1](2018-05-10-lsi-1-1.html)
+- [LSI section 1.2](2018-05-11-lsi-1-2.html)
