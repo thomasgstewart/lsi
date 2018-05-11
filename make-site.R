@@ -21,4 +21,3 @@ make_index <- function(){
 make_index()
 
 rmarkdown::render_site()
-rmarkdown::render_site("./posts/")

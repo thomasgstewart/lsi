@@ -1,9 +1,0 @@
-name: "tgs-summer-school"
-navbar:
-  title: " "
-  left:
-    - text: "Posts"
-      href: "../../index.html"
-output:
-  html_document:
-    theme: flatly
