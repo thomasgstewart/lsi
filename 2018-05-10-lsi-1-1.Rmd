@@ -11,6 +11,8 @@ header-includes:
 require(tgsify)
 ```
 
+## From equation 1.1 to 1.10 (with slightly different notation)
+
 \[
 \mu \sim N(\theta, A) \\
 z|\mu \sim N(\mu, B)
@@ -44,7 +46,7 @@ If, as in the book, $\theta = 0$ and $B = I$, then
 \]
 
 
-## Posterior when θ is e, a is π, and b is the golden ratio
+### Example: Posterior when θ is e, a is π, and b is the golden ratio
 ```{r}
 set.seed(2345)
 theta <- exp(1)
@@ -74,3 +76,69 @@ axis(3, at = c(z, theta), label = c("z", "θ"))
 abline(v = mean, col = "red", lty = 2)
 axis(3, at = mean, label = "E(μ|z)", line = 1, tcl = 0)
 ```
+
+## Equation 1.15
+
+Let $\tau(z)$ be a generic estimator of $\mu$. Let $\hat{\mu}$ denote the MLE estimate of $\mu$.
+
+Let $R\left(\mu, \tau(z)\right)$ denote risk (or frequentist risk), i.e.,
+\[
+\begin{align*}
+R\left(\mu, \tau(z)\right) =\ &E_{z|\mu}\left[L\left(\mu, \tau(z) \right) \right] \\
+& \int L\left(\mu, \tau(z) \right) p(z|\mu)\, dx.
+\end{align*}
+\]
+
+Bayes risk, denote with $B$, is the frequentist risk averaged over the prior.
+
+\[
+\begin{align*}
+B(\tau(z)) =\ &E_{\mu}\left[E_{z|\mu}\left[L\left(\tau(z), \mu\right) \right] \right] \\
+&\int \int L\left(\tau(z), \mu\right) p(z|\mu)\,dx\,p(\mu)\,d\mu
+\end{align*}
+\]
+
+In the case of the MLE, $\hat{\mu} = z$, the frequentist risk with squared error loss is
+\[
+\begin{align*}
+R\left(\mu, \hat{\mu}\right) =\ & E_{z|\mu}\left[ (z - \mu)^t(z-\mu) \right]\\
+& \text{Note if } B = I \text{ then } z-\mu \sim N(0, I) \text{ which implies } (z - \mu)^t(z-\mu) \sim \chi^2_N \\
+=\ & N
+\end{align*}
+\]
+
+Bayes risk of the MLE, then, is
+\[
+B(\hat{\mu}) = E_\mu[N] = N.
+\]
+
+## Equation 1.18
+
+The posterior mean estimator is (when $B = I$ and $A = aI$)
+\[
+\dot\mu = E[\mu|z] = \frac{a}{a+1}\left[\frac{1}{a}\theta + z\right].
+\] 
+
+The frequentist risk of $\dot\mu$ is
+\[
+\begin{align*}
+R(\mu, \dot\mu) =\ & E_{z|\mu}\left[ (\dot\mu - \mu)^t(\dot\mu - \mu) \right]\\
+&\text{Note } \dot\mu - \mu = \frac{a}{a+1}\left[\frac{1}{a}\theta + z\right] - \mu \sim N\left(\frac{1}{a+1} \cdot (\theta -\mu), \frac{a^2}{(a+1)^2}\cdot I \right)\\
+&\text{So, } \frac{(a+1)^2}{a^2}(\dot\mu - \mu)^t(\dot\mu - \mu) \sim \chi^2_{N,\lambda} \text{ where } \lambda = \frac{1}{2a^2} (\theta - \mu)^t(\theta - \mu)\\
+=\ & \frac{a^2}{(a+1)^2}E_{z|\mu}\left[ \frac{(a+1)^2}{a^2}(\dot\mu - \mu)^t(\dot\mu - \mu) \right] \\
+=\ & \frac{a^2}{(a+1)^2}\left(N + 2\lambda\right) \\
+=\ & \frac{a^2}{(a+1)^2}\left(N + \frac{1}{a^2} (\theta - \mu)^t(\theta - \mu)\right) \\
+=\ & \frac{a^2}{(a+1)^2} N + \frac{1}{(a+1)^2} (\theta - \mu)^t(\theta - \mu) \\
+\end{align*}
+\]
+
+The Bayesian risk of $\dot\mu$ is
+\[
+\begin{align*}
+B(\dot\mu) =\ &E_{\mu}\left[\frac{a^2}{(a+1)^2} N + \frac{1}{(a+1)^2} (\theta - \mu)^t(\theta - \mu) \right] \\ 
+&\text{Note }\frac{1}{\sqrt{a}}(\theta - \mu) \sim N(0,I) \text{ so }  \frac{1}{a} (\theta - \mu)^t(\theta - \mu) \sim \chi^2_N\\
+=\ & \frac{a^2}{(a+1)^2} N  + \frac{a}{(a+1)^2} E_{\mu}\left[ \frac{1}{a} (\theta - \mu)^t(\theta - \mu) \right] \\
+=\ & \frac{a^2}{(a+1)^2} N + \frac{a}{(a+1)^2} N \\
+=\ & \frac{a}{(a+1)} N
+\end{align*}
+\]

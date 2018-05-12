@@ -214,6 +214,8 @@ $(document).ready(function () {
 </div>
 
 
+<div id="from-equation-1.1-to-1.10-with-slightly-different-notation" class="section level2">
+<h2>From equation 1.1 to 1.10 (with slightly different notation)</h2>
 <p><span class="math display">\[
 \mu \sim N(\theta, A) \\
 z|\mu \sim N(\mu, B)
@@ -240,8 +242,8 @@ f_{\mu|z} \propto &amp;\ f_{\mu}f_{z|\mu} \\
 <p>If, as in the book, <span class="math inline">\(\theta = 0\)</span> and <span class="math inline">\(B = I\)</span>, then <span class="math display">\[
 \mu|z \sim N\left(\frac{a}{a+1}\cdot z,\ \frac{a}{a + 1} \cdot I \right)
 \]</span></p>
-<div id="posterior-when--is-e-a-is--and-b-is-the-golden-ratio" class="section level2">
-<h2>Posterior when θ is e, a is π, and b is the golden ratio</h2>
+<div id="example-posterior-when--is-e-a-is--and-b-is-the-golden-ratio" class="section level3">
+<h3>Example: Posterior when θ is e, a is π, and b is the golden ratio</h3>
 <pre class="r"><code>set.seed(2345)
 theta &lt;- exp(1)
 a &lt;- pi
@@ -270,6 +272,60 @@ axis(3, at = c(z, theta), label = c(&quot;z&quot;, &quot;θ&quot;))
 abline(v = mean, col = &quot;red&quot;, lty = 2)
 axis(3, at = mean, label = &quot;E(μ|z)&quot;, line = 1, tcl = 0)</code></pre>
 <p><img src="2018-05-10-lsi-1-1_files/figure-html/unnamed-chunk-2-1.png" width="672" /></p>
+</div>
+</div>
+<div id="equation-1.15" class="section level2">
+<h2>Equation 1.15</h2>
+<p>Let <span class="math inline">\(\tau(z)\)</span> be a generic estimator of <span class="math inline">\(\mu\)</span>. Let <span class="math inline">\(\hat{\mu}\)</span> denote the MLE estimate of <span class="math inline">\(\mu\)</span>.</p>
+<p>Let <span class="math inline">\(R\left(\mu, \tau(z)\right)\)</span> denote risk (or frequentist risk), i.e., <span class="math display">\[
+\begin{align*}
+R\left(\mu, \tau(z)\right) =\ &amp;E_{z|\mu}\left[L\left(\mu, \tau(z) \right) \right] \\
+&amp; \int L\left(\mu, \tau(z) \right) p(z|\mu)\, dx.
+\end{align*}
+\]</span></p>
+<p>Bayes risk, denote with <span class="math inline">\(B\)</span>, is the frequentist risk averaged over the prior.</p>
+<p><span class="math display">\[
+\begin{align*}
+B(\tau(z)) =\ &amp;E_{\mu}\left[E_{z|\mu}\left[L\left(\tau(z), \mu\right) \right] \right] \\
+&amp;\int \int L\left(\tau(z), \mu\right) p(z|\mu)\,dx\,p(\mu)\,d\mu
+\end{align*}
+\]</span></p>
+<p>In the case of the MLE, <span class="math inline">\(\hat{\mu} = z\)</span>, the frequentist risk with squared error loss is <span class="math display">\[
+\begin{align*}
+R\left(\mu, \hat{\mu}\right) =\ &amp; E_{z|\mu}\left[ (z - \mu)^t(z-\mu) \right]\\
+&amp; \text{Note if } B = I \text{ then } z-\mu \sim N(0, I) \text{ which implies } (z - \mu)^t(z-\mu) \sim \chi^2_N \\
+=\ &amp; N
+\end{align*}
+\]</span></p>
+<p>Bayes risk of the MLE, then, is <span class="math display">\[
+B(\hat{\mu}) = E_\mu[N] = N.
+\]</span></p>
+</div>
+<div id="equation-1.18" class="section level2">
+<h2>Equation 1.18</h2>
+<p>The posterior mean estimator is (when <span class="math inline">\(B = I\)</span> and <span class="math inline">\(A = aI\)</span>) <span class="math display">\[
+\dot\mu = E[\mu|z] = \frac{a}{a+1}\left[\frac{1}{a}\theta + z\right].
+\]</span></p>
+<p>The frequentist risk of <span class="math inline">\(\dot\mu\)</span> is <span class="math display">\[
+\begin{align*}
+R(\mu, \dot\mu) =\ &amp; E_{z|\mu}\left[ (\dot\mu - \mu)^t(\dot\mu - \mu) \right]\\
+&amp;\text{Note } \dot\mu - \mu = \frac{a}{a+1}\left[\frac{1}{a}\theta + z\right] - \mu \sim N\left(\frac{1}{a+1} \cdot (\theta -\mu), \frac{a^2}{(a+1)^2}\cdot I \right)\\
+&amp;\text{So, } \frac{(a+1)^2}{a^2}(\dot\mu - \mu)^t(\dot\mu - \mu) \sim \chi^2_{N,\lambda} \text{ where } \lambda = \frac{1}{2a^2} (\theta - \mu)^t(\theta - \mu)\\
+=\ &amp; \frac{a^2}{(a+1)^2}E_{z|\mu}\left[ \frac{(a+1)^2}{a^2}(\dot\mu - \mu)^t(\dot\mu - \mu) \right] \\
+=\ &amp; \frac{a^2}{(a+1)^2}\left(N + 2\lambda\right) \\
+=\ &amp; \frac{a^2}{(a+1)^2}\left(N + \frac{1}{a^2} (\theta - \mu)^t(\theta - \mu)\right) \\
+=\ &amp; \frac{a^2}{(a+1)^2} N + \frac{1}{(a+1)^2} (\theta - \mu)^t(\theta - \mu) \\
+\end{align*}
+\]</span></p>
+<p>The Bayesian risk of <span class="math inline">\(\dot\mu\)</span> is <span class="math display">\[
+\begin{align*}
+B(\dot\mu) =\ &amp;E_{\mu}\left[\frac{a^2}{(a+1)^2} N + \frac{1}{(a+1)^2} (\theta - \mu)^t(\theta - \mu) \right] \\ 
+&amp;\text{Note }\frac{1}{\sqrt{a}}(\theta - \mu) \sim N(0,I) \text{ so }  \frac{1}{a} (\theta - \mu)^t(\theta - \mu) \sim \chi^2_N\\
+=\ &amp; \frac{a^2}{(a+1)^2} N  + \frac{a}{(a+1)^2} E_{\mu}\left[ \frac{1}{a} (\theta - \mu)^t(\theta - \mu) \right] \\
+=\ &amp; \frac{a^2}{(a+1)^2} N + \frac{a}{(a+1)^2} N \\
+=\ &amp; \frac{a}{(a+1)} N
+\end{align*}
+\]</span></p>
 </div>
 
 
