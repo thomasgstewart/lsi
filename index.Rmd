@@ -1,6 +1,8 @@
 ---
-title: Posts
+title: "Posts"
 ---
 
 - [LSI Section 1.1](2018-05-10-lsi-1-1.html)
 - [LSI section 1.2](2018-05-11-lsi-1-2.html)
+- [Risk comparisons](risk-diff-js.html)
+- [notation key](notation-key.html)
