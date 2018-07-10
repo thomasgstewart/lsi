@@ -1,0 +1,55 @@
+---
+title: "Key"
+---
+
+
+## Chapter 1
+
+\begin{alignat*}{3}
+& 
+  \text{SEDS blog} \hskip 2cm   &&  \text{LSI Efron} \hskip 2cm   &&   \text{description}
+\\
+\hline 
+&
+  \theta   &&     M   &&   \mu_i \text{ constant mean } 
+\\
+& 
+  a   &&  A  &&  \mu_i \text{ constant variance }
+\\
+& 
+  b    && \sigma^2_0   &&  z_i \text{ constant variance }
+\\
+
+& 
+  (\text{none})   &&   B   &&   \text{in LSI, is equal to } A/(A+1) \text{ or }  A/(A + \sigma^2_0)
+\\
+&
+  \tau(z)  &&  t(z)   &&  \widehat{\mu}, \text{ some estimator for } \mu
+\\
+&
+  E_{z|\mu}[\cdot]  &&  E_{\mu}[\cdot]   &&  \text{expectation with respect to } z, \text{ with } \mu \text{ fixed }
+\\
+&
+  E_\mu[\cdot]   &&  E_A[\cdot]   && \text{expectation with respect to } \mu, \text{ with } \{a;A\} \text{ fixed }
+\\
+&
+  R(\mu, \tau(z))     &&   R^{(t(z))}(\mu)   &&   \text{risk }
+\\
+&
+  B(\tau(z))     &&   R_A^{(t(z))}   &&   \text{Bayes risk }
+\\
+&
+  \widehat{\mu}   &&   \widehat{\mu}^{(\text{MLE})}  && \text{MLE estimator}
+\\
+&
+  \dot\mu   &&   \widehat{\mu}^{\text{(Bayes)}}   &&   \text{posterior mean estimator or "Bayes estimator"}
+\\
+&
+  A   &&  (\text{none})   &&  \boldsymbol{\mu} \text{ unstructured covariance matrix} 
+\\
+&
+  B   &&   (\text{none})   && \boldsymbol{z} \text{ unstructured covariance matrix}
+\end{alignat*} 
+
+
+
