@@ -4,3 +4,5 @@ title: Posts
 
 - [LSI Section 1.1](2018-05-10-lsi-1-1.html)
 - [LSI section 1.2](2018-05-11-lsi-1-2.html)
+- [Notation key](notation-key.html)
+- [Risk comparisons with shrinkage estimators (LSI Chapter 1)](risk-diff-js.html)
