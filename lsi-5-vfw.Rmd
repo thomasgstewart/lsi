@@ -1,0 +1,136 @@
+---
+title: "Chapter 5 example"
+output:
+  html_document:
+header_includes:
+  - \usepackage{amsmath, mathtools}
+  - \usepackage[mathscr]{euscript}
+---
+   
+# <span style="font-family:Georgia; font-size:0.65em;"> Estimate $\pi_0$ using section 4.5 methods  </span>
+
+The `prostz.RData` consists of 6,033 z-values from the prostate cancer data analysis example. 
+
+```{r}
+load(file.path("/Users/valeriewelty/Dropbox/Vandy/SEDS Lab Group/lsi", "prostz.RData"))
+length(prostz)
+```
+
+In this example, we take $\mathscr{A}_0$ to be the central $\alpha_0$ proportion of the $f_0$ distribution as on page 60. Here we use $\alpha_0 = 0.5$ and $f_0$ is $\mathscr{N}(0, 1)$ such that   
+
+\begin{align}
+\mathscr{A}_0 & = \left[ \Phi^{-1} (0.5 - \alpha_0/2), \Phi^{-1}(0.5+\alpha_0/2) \right] \\
+& = \left[ \Phi^{-1} (0.5 - 0.5/2), \Phi^{-1}(0.5+0.5/2) \right] \\
+& = \left[ \Phi^{-1} (0.25), \Phi^{-1}(0.75) \right] \\
+& = \left[ -0.6745, 0.6745 \right] 
+\end{align}
+
+```{r, results = "markup"}
+(a0 = 0.5)
+(A0 = qnorm(0.5 + c(-1, 1) * a0/2))
+```
+
+We "believe" that $f_1(z)$ is zero for this subset of the sample space, i.e. $f_1(z) = 0$ for $z \in \mathscr{A} = [ -0.6745, 0.6745 ]$. By this assumption, all non-null cases have $z$-values outside of $\mathscr{A}_0$ (called the _zero assumption_). Recall  $N_+(\mathscr{A}_0)$ is the observed number of $z_i$ values in $\mathscr{A}_0$, and here is equal to 2,790. 
+
+```{r}
+length(which(prostz >= A0[1] & prostz <= A0[2]))
+```
+ 
+Recall that $E[N_+(\mathscr{A}_0)] = \pi_0 \cdot N \cdot F_0(\mathscr{A}_0)$ (4.45), suggesting the estimator 
+
+\begin{align}
+\hat{\pi}_0 & = N_+(\mathscr{A}_0)/(N \cdot F_0(\mathscr{A}_0)) \\
+& = \frac{2,790}{6,033 \cdot F_0(\mathscr{A}_0)}
+\end{align}
+
+```{r}
+N = length(prostz)
+N_plus_A0 = length(which(prostz >= A0[1] & prostz <= A0[2]))
+
+(pi0 = N_plus_A0/(N * (pnorm(A0[2]) - pnorm(A0[1]))))
+```
+
+For the DTI data set, $N = 15,443$ and $N_+(\mathscr{A}_0) = 7,165$ and therefore $\hat{\pi}_0 = $. 
+
+```{r}
+load(file.path("/Users/valeriewelty/Dropbox/Vandy/SEDS Lab Group/lsi", "DTIdata.Rda"))
+DTIz = DTIdata[, 'z.value']
+  
+(N = length(DTIz))
+(N_plus_A0 = length(which(DTIz >= A0[1] & DTIz <= A0[2])))
+(pi0 = N_plus_A0/(N * (pnorm(A0[2]) - pnorm(A0[1]))))
+```
+
+
+
+Recreate Figure 4.5: 
+
+```{r}
+
+a0 = seq(0.1, 0.9, 0.03)
+
+pi0_p = sapply(a0, function(a0) {
+  
+  A0 = qnorm(0.5 + c(-1, 1) * a0/2)
+  N = length(prostz)
+  N_plus_A0 = length(which(prostz >= A0[1] & prostz <= A0[2]))
+
+  pi0 = N_plus_A0/(N * (pnorm(A0[2]) - pnorm(A0[1])))
+  
+  return(pi0)
+  
+})
+
+pi0_D = sapply(a0, function(a0) {
+  
+  A0 = qnorm(0.5 + c(-1, 1) * a0/2)
+  N = length(DTIz)
+  N_plus_A0 = length(which(DTIz >= A0[1] & DTIz <= A0[2]))
+
+  pi0 = N_plus_A0/(N * (pnorm(A0[2]) - pnorm(A0[1])))
+  
+  return(pi0)
+  
+})
+
+
+plot(a0, pi0_p, type = 'l', main = 'by 0.03', ylab = 'pi0 estimate')
+lines(a0, pi0_D, lty = 2)
+legend('bottomright', c('prostate', 'DTI'), lty = c(1, 2), bty = 'n')
+
+### finer detail
+a0 = seq(0.1, 0.9, 0.001)
+
+pi0_p = sapply(a0, function(a0) {
+  
+  A0 = qnorm(0.5 + c(-1, 1) * a0/2)
+  N = length(prostz)
+  N_plus_A0 = length(which(prostz >= A0[1] & prostz <= A0[2]))
+
+  pi0 = N_plus_A0/(N * (pnorm(A0[2]) - pnorm(A0[1])))
+  
+  return(pi0)
+  
+})
+
+pi0_D = sapply(a0, function(a0) {
+  
+  A0 = qnorm(0.5 + c(-1, 1) * a0/2)
+  N = length(DTIz)
+  N_plus_A0 = length(which(DTIz >= A0[1] & DTIz <= A0[2]))
+
+  pi0 = N_plus_A0/(N * (pnorm(A0[2]) - pnorm(A0[1])))
+  
+  return(pi0)
+  
+})
+
+
+plot(a0, pi0_p, type = 'l', main = 'by 0.001', ylab = 'pi0 estimate')
+lines(a0, pi0_D, lty = 2)
+legend('bottomright', c('prostate', 'DTI'), lty = c(1, 2), bty = 'n')
+
+```
+
+
+
