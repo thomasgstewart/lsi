@@ -238,13 +238,15 @@ d_zero_alternative &lt;- function(x, a = .7, shape = 2, rate = 3){
   1*(abs(x)-a &gt; 0) * dgamma(abs(x)-a, shape, rate)/2
 }
 
+plotstyle(style = upright)
 r_zero_alternative(1e5) %&gt;% hist(breaks = 100, ylab = &quot;&quot;, main = &quot;&quot;, freq = FALSE)
 abline(v = c(-1,1)*.7, col = &quot;grey&quot;)
 box()
 curve(d_zero_alternative, add = TRUE, lwd = 3, col = &quot;#19077860&quot;)</code></pre>
 <p><img src="2018-07-17-lsi-5-1_files/figure-html/unnamed-chunk-3-1.png" width="672" /></p>
 <p>An example of a draw from the mixture distribution (with <span class="math inline">\(\pi_0 = .95\)</span>) is:</p>
-<pre class="r"><code>N &lt;- 1e5
+<pre class="r"><code>plotstyle(style = upright)
+N &lt;- 1e5
 g &lt;- rbinom(N,1,.95)
 z &lt;- g*rnorm(N) + (1-g)*r_zero_alternative(N,.7,2,3)
 z %&gt;% hist(breaks = 100, main = &quot;&quot;, ylab = &quot;&quot;)
@@ -275,6 +277,7 @@ P(-a\leq Z \leq a) &amp;= \sum_{i=0}^1 P(G = i)\,P(-a\leq Z \leq a | G = i)\\
 <pre class="r"><code>as &lt;- c(.1, .2, .3, .4, .5, .6, .7, .8, .9)
 pi_hat &lt;- estimate_pi(z, as)
 
+plotstyle(style = upright)
 par(mar = c(2,2,4,4))
 plot(as, pi_hat, type = &quot;b&quot;, xlab = &quot;a&quot;, ylab = &quot;&quot;, ylim = c(.94,.96))
 title(main = &quot;Estimated π in simulated data&quot;, line = 3)
@@ -288,6 +291,8 @@ axis(4,.95,&quot;True π&quot;)</code></pre>
 <h3>Estimation of <span class="math inline">\(\pi_0\)</span> in the prostate data</h3>
 <pre class="r"><code>pis &lt;- estimate_pi(zs, as)
 
+plotstyle(style = upright)
+par(mar = c(2,2,4,4))
 plot(as, pis, ylab = &quot;&quot;, xlab = &quot;&quot;, type = &quot;b&quot;)
 title(main = &quot;Estimates of π as a function of a&quot;, xlab = &quot;a&quot;)
 axis(3,median(as), &quot;True a?&quot;, tick = FALSE)
@@ -309,6 +314,8 @@ load(con); close(con)
 as &lt;- seq(0.2, 0.8,by = 0.005)
 pis &lt;- estimate_pi(DTIdata[,4], as)
 
+plotstyle(style = upright)
+par(mar = c(2,2,4,4))
 plot(as, pis, ylab = &quot;&quot;, xlab = &quot;&quot;, type = &quot;b&quot;, ylim = c(min(pis), 0.94))
 title(main = &quot;Estimates of π as a function of a&quot;, xlab = &quot;a&quot;)
 axis(3,median(as), &quot;True a?&quot;, tick = FALSE)
@@ -329,6 +336,8 @@ up &lt;- labs %&gt;% sub(&quot;[^,]*,([^]]*)\\]&quot;, &quot;\\1&quot;, .) %&gt;
 mp &lt;- .5*lo + .5*up
 cs &lt;- table(ws)
 
+plotstyle(style = upright)
+par(mar = c(2,2,2,2))
 hist(zs, breaks = 90, col = &quot;#ad000070&quot;,border = &quot;white&quot;)
 points(mp, cs, col = &quot;#0E0879&quot;)
 
@@ -343,6 +352,9 @@ box()</code></pre>
 <h2>ECDF methods for esimating f(z)</h2>
 <pre class="r"><code>suppressMessages(require(splines))
 pz &lt;- ecdf(c(-10, zs, 10))(zs)
+
+plotstyle(style = upright)
+par(mar = c(2,2,2,2))
 plot(zs, pz, col = &quot;#0E0879&quot;)
 
 logodds &lt;- function(x) log(x/(1-x))

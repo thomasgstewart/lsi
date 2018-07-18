@@ -1,5 +1,6 @@
 ---
 title: LSI section 5.1
+output: html_document
 ---
 
 ```{r}
@@ -57,6 +58,7 @@ d_zero_alternative <- function(x, a = .7, shape = 2, rate = 3){
   1*(abs(x)-a > 0) * dgamma(abs(x)-a, shape, rate)/2
 }
 
+plotstyle(style = upright)
 r_zero_alternative(1e5) %>% hist(breaks = 100, ylab = "", main = "", freq = FALSE)
 abline(v = c(-1,1)*.7, col = "grey")
 box()
@@ -66,6 +68,7 @@ curve(d_zero_alternative, add = TRUE, lwd = 3, col = "#19077860")
 An example of a draw from the mixture distribution (with $\pi_0 = .95$) is:
 
 ```{r}
+plotstyle(style = upright)
 N <- 1e5
 g <- rbinom(N,1,.95)
 z <- g*rnorm(N) + (1-g)*r_zero_alternative(N,.7,2,3)
@@ -106,6 +109,7 @@ estimate_pi <- function(z, a){
 as <- c(.1, .2, .3, .4, .5, .6, .7, .8, .9)
 pi_hat <- estimate_pi(z, as)
 
+plotstyle(style = upright)
 par(mar = c(2,2,4,4))
 plot(as, pi_hat, type = "b", xlab = "a", ylab = "", ylim = c(.94,.96))
 title(main = "Estimated π in simulated data", line = 3)
@@ -120,6 +124,8 @@ axis(4,.95,"True π")
 ```{r}
 pis <- estimate_pi(zs, as)
 
+plotstyle(style = upright)
+par(mar = c(2,2,4,4))
 plot(as, pis, ylab = "", xlab = "", type = "b")
 title(main = "Estimates of π as a function of a", xlab = "a")
 axis(3,median(as), "True a?", tick = FALSE)
@@ -141,6 +147,8 @@ load(con); close(con)
 as <- seq(0.2, 0.8,by = 0.005)
 pis <- estimate_pi(DTIdata[,4], as)
 
+plotstyle(style = upright)
+par(mar = c(2,2,4,4))
 plot(as, pis, ylab = "", xlab = "", type = "b", ylim = c(min(pis), 0.94))
 title(main = "Estimates of π as a function of a", xlab = "a")
 axis(3,median(as), "True a?", tick = FALSE)
@@ -162,6 +170,8 @@ up <- labs %>% sub("[^,]*,([^]]*)\\]", "\\1", .) %>% as.numeric
 mp <- .5*lo + .5*up
 cs <- table(ws)
 
+plotstyle(style = upright)
+par(mar = c(2,2,2,2))
 hist(zs, breaks = 90, col = "#ad000070",border = "white")
 points(mp, cs, col = "#0E0879")
 
@@ -177,6 +187,9 @@ box()
 ```{r}
 suppressMessages(require(splines))
 pz <- ecdf(c(-10, zs, 10))(zs)
+
+plotstyle(style = upright)
+par(mar = c(2,2,2,2))
 plot(zs, pz, col = "#0E0879")
 
 logodds <- function(x) log(x/(1-x))

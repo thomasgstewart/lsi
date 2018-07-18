@@ -1,5 +1,5 @@
 ---
-title: "Comparison of risk between estimators"
+title: Comparison of risk between estimators
 output:
   html_document:
     code_folding: hide
