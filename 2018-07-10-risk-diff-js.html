@@ -215,17 +215,13 @@ $(document).ready(function () {
 
 
 <p>Using notation from <a href="2018-05-10-lsi-1-1.html">this section</a>:</p>
-<span class="math display">\[\begin{aligned}
-\mu &amp; \sim N_N(\theta  \boldsymbol{1}, A) \\
-z | \mu &amp; \sim N_N(\mu, B)  \\
-\mu | z &amp; \sim N_N\left( [A^{-1} + B^{-1}]^{-1}[A^{-1}\theta + B^{-1} z], [A^{-1} + B^{-1}]^{-1}  \right)  \hskip 2cm [tgs]
-\end{aligned}\]</span>
+<p>\begin{aligned} &amp; N_N(, A) \ z | &amp; N_N(, B) \ | z &amp; N_N( [A^{-1} + B^{-1}]^{-1}[A^{-1}+ B^{-1} z], [A^{-1} + B^{-1}]^{-1} )  [tgs] \end{aligned}</p>
 <div id="case-i-shrink-to-zero---the-mean-of-mu_i---and-let-varz_i-1" class="section level2">
 <h2>Case I: <span style="font-family:Georgia; font-size:0.7em;">Shrink to zero - the mean of <span class="math inline">\(\mu_i\)</span> - and let <span class="math inline">\(var(z_i) = 1\)</span> </span></h2>
 <div id="setup" class="section level3">
 <h3>Setup</h3>
 <p>Take the case where <span class="math inline">\(\theta = 0\)</span>, <span class="math inline">\(A = a I\)</span>, and <span class="math inline">\(B = I\)</span>. This gives us</p>
-<span class="math display">\[\begin{alignat*}{3}
+\begin{alignat*}{3}
 \mu &amp; \sim N_N(0, aI) \hskip 4.5cm 
 &amp;&amp; lsi \, (1.8) 
 \\
@@ -240,12 +236,12 @@ z | \mu &amp; \sim N_N(\mu, I)
 \\
 z &amp; \sim N_N(0, (a + 1) \cdot I) 
 &amp;&amp; lsi \,\, (1.20) 
-\end{alignat*}\]</span>
+\end{alignat*}
 <p>such that <span class="math inline">\(\mu_i \overset{iid}{\sim} N(0, a)\)</span> and <span class="math inline">\(z_i|\mu_i \overset{ind}{\sim} N(\mu_i, 1)\)</span> (as in <span class="math inline">\(lsi \, (1.7)\)</span>).</p>
 </div>
 <div id="estimates" class="section level3">
 <h3>Estimates</h3>
-<span class="math display">\[\begin{alignat*}{6}
+\begin{alignat*}{6}
 &amp; \text{Estimator} 
   &amp;&amp; \hskip 5cm 
 &amp;&amp; \text{Risk}
@@ -279,7 +275,7 @@ z &amp; \sim N_N(0, (a + 1) \cdot I)
   &amp;&amp;  
 &amp;&amp; 
   &amp;&amp;  = \frac{a}{a+1} N + \frac{2}{a+1} 
-\end{alignat*}\]</span>
+\end{alignat*}
 <p>The figure below displays the (Bayes) risks as a function of <span class="math inline">\(a\)</span> (the variance of <span class="math inline">\(\mu_i\)</span>) for various values of <span class="math inline">\(N\)</span>. Note that the risk of the MLE is constant as a function of <span class="math inline">\(a\)</span>. The (Bayes) risks of the Bayes and James-Stein estimators approaches the risk of the maximum likelihood estimator as <span class="math inline">\(a \to \infty\)</span> (but does not converge to being equal).</p>
 <p>Also note that the risk of the James-Stein estimator converges to the (Bayes) risk of the Bayes estimator as <span class="math inline">\(N \to \infty\)</span>.</p>
 <pre class="r"><code>plotFun &lt;- function(a, N) {
@@ -311,12 +307,12 @@ plotFun(a = 1:100, N = 10)
 plotFun(a = 1:100, N = 100)
 mtext(expression(paste(&quot;E(&quot;, mu[i], &quot;) = 0, var(&quot;, z[i], &quot;) = 1&quot;)), side = 3, line = -2, outer = TRUE)
 par(mfrow = c(1,1))</code></pre>
-<p><img src="risk-diff-js_files/figure-html/unnamed-chunk-1-1.png" width="672" /></p>
+<p><img src="2018-07-10-risk-diff-js_files/figure-html/unnamed-chunk-1-1.png" width="672" /></p>
 </div>
 <div id="comparison-of-risk" class="section level3">
 <h3>Comparison of Risk</h3>
 <p>The relationship between Bayes estimator and James-Stein estimator risk (bayes) values:</p>
-<span class="math display">\[\begin{alignat*}{3}
+\begin{alignat*}{3}
 &amp; \frac{B\left(\widehat{\mu}^{(\text{JS})}\right)}{B\left(\widehat{\mu}^{(\text{Bayes})}\right)} 
   &amp;&amp; = \frac{\frac{a}{a+1} N + \frac{2}{a+1}}{\frac{a}{a+1} N} 
 \\
@@ -335,9 +331,9 @@ par(mfrow = c(1,1))</code></pre>
 \\
 &amp;
   &amp;&amp; = \frac{2}{a+1}
-\end{alignat*}\]</span>
+\end{alignat*}
 <p>The relationship between maximum likelihood estimator and James-Stein estimator risk (bayes) values:</p>
-<span class="math display">\[\begin{alignat*}{3}
+\begin{alignat*}{3}
 &amp; \frac{B\left(\widehat{\mu}^{(\text{MLE})}\right)}{B\left(\widehat{\mu}^{(\text{JS})}\right)} 
   &amp;&amp; =  \frac{N}{N - \frac{N-2}{a+1}} 
 \\
@@ -353,7 +349,7 @@ par(mfrow = c(1,1))</code></pre>
 \\
 &amp;
   &amp;&amp; = \frac{N-2}{a+1}
-\end{alignat*}\]</span>
+\end{alignat*}
 <p>The figure below displays the ratio of (Bayes) risks as a function of <span class="math inline">\(a\)</span> (the variance of <span class="math inline">\(\mu_i\)</span>) for various values of <span class="math inline">\(N\)</span> (top three figures), or the ratio of Bayes risks as a function of <span class="math inline">\(N\)</span>, the number of groups, for various values of <span class="math inline">\(a\)</span> (bottom three figures).</p>
 <p>The ratio of risks between the James-Stein estimator and Bayes estimator converges to <span class="math inline">\(1\)</span> as <span class="math inline">\(N \to \infty\)</span>. In accordance with Theorem (1.26), the risk of the maximum likelihood estimator is greater than the risk of the James-Stein estimator only for <span class="math inline">\(N \geq 3\)</span> (the vertical grey dashed line shows <span class="math inline">\(N = 3\)</span>).</p>
 <p><span style="col:red">** below: note scale changes (fix later)</span></p>
@@ -427,7 +423,7 @@ plotFun2(a = seq(1, 150, by = 0.5), N = 100, ratio = T)
 plotFun2(a = 1, N = seq(1, 100, by = 1), ratio = T)
 plotFun2(a = 4, N = seq(1, 100, by = 1), ratio = T)
 plotFun2(a = 25, N = seq(1, 100, by = 1), ratio = T)</code></pre>
-<p><img src="risk-diff-js_files/figure-html/unnamed-chunk-2-1.png" width="672" /></p>
+<p><img src="2018-07-10-risk-diff-js_files/figure-html/unnamed-chunk-2-1.png" width="672" /></p>
 <pre class="r"><code>par(mfrow = c(1,1))</code></pre>
 <p>Same setup as above, except calculating the difference in Bayes risks instead of the ratio. Note that the difference between the risk of James-Stein estimator and the Bayes estimator is constant with respect to <span class="math inline">\(N\)</span>, while the ratio of risks was not (weird?).</p>
 <p><span style="col:red">** again, note scale changes (fix later)</span></p>
@@ -439,14 +435,14 @@ plotFun2(a = seq(1, 150, by = 0.5), N = 100, ratio = F)
 plotFun2(a = 1, N = seq(1, 100, by = 1), ratio = F)
 plotFun2(a = 4, N = seq(1, 100, by = 1), ratio = F)
 plotFun2(a = 25, N = seq(1, 100, by = 1), ratio = F)</code></pre>
-<p><img src="risk-diff-js_files/figure-html/unnamed-chunk-3-1.png" width="672" /></p>
+<p><img src="2018-07-10-risk-diff-js_files/figure-html/unnamed-chunk-3-1.png" width="672" /></p>
 <pre class="r"><code>par(mfrow = c(1,1))</code></pre>
 </div>
 </div>
 <div id="case-ii-shrink-to-barz-let-emu_i-theta-and-varz_i-b" class="section level2">
 <h2>Case II: <span style="font-family:Georgia; font-size:0.7em;">Shrink to <span class="math inline">\(\bar{z}\)</span>, let <span class="math inline">\(E(\mu_i) = \theta\)</span> and <span class="math inline">\(var(z_i) = b\)</span> </span></h2>
 <p>Let <span class="math inline">\(\theta\)</span> be general, and let <span class="math inline">\(B = bI\)</span>. This gives us</p>
-<span class="math display">\[\begin{alignat*}{3}
+\begin{alignat*}{3}
 \mu &amp; \sim N_N(\theta, aI)  \hskip 6cm 
   &amp;&amp;  lsi \, (1.32) \\
 z | \mu &amp; \sim N_N(\mu, bI)  
@@ -456,14 +452,14 @@ z | \mu &amp; \sim N_N(\mu, bI)
   &amp;&amp; lsi \,\, (1.33) \,\, [tgs] \\
 z &amp; \sim N_N \left(\theta, (a + b) \cdot I \right)  
   &amp;&amp; lsi \,\, (1.33)
-\end{alignat*}\]</span>
+\end{alignat*}
 <p>such that <span class="math inline">\(\mu_i \overset{iid}{\sim} N(\theta, a)\)</span> and <span class="math inline">\(z_i|\mu_i \overset{ind}{\sim} N(\mu_i, b)\)</span> (<span class="math inline">\(lsi \, (1.32)\)</span>).</p>
 <div id="estimates-1" class="section level3">
 <h3>Estimates</h3>
 <p>Note that we now need <span class="math inline">\(N \geq 4\)</span> to satisfy Theorem (1.26).</p>
 <div id="summary" class="section level4">
 <h4>Summary</h4>
-<span class="math display">\[\begin{alignat*}{6}
+\begin{alignat*}{6}
 &amp; \text{Estimator} 
   &amp;&amp; \hskip 5cm 
 &amp;&amp; \text{Risk}
@@ -497,7 +493,7 @@ z &amp; \sim N_N \left(\theta, (a + b) \cdot I \right)
   &amp;&amp;  
 &amp;&amp; 
   &amp;&amp;  = 
-\end{alignat*}\]</span>
+\end{alignat*}
 </div>
 </div>
 </div>
