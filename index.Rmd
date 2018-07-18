@@ -7,3 +7,4 @@ title: Posts
 - [LSI section 1.2](2018-05-11-lsi-1-2.html)
 - [Comparison of risk between estimators](2018-07-10-risk-diff-js.html)
 - [LSI section 5.1](2018-07-17-lsi-5-1.html)
+- [LSI section 5.1 Val](lsi-5-vfw.html)
