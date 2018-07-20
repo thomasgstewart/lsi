@@ -1,19 +1,31 @@
 ---
-title: "Chapter 5 example"
+title: LSI Section 5 vfw
 output:
   html_document:
+    toc: TRUE
+    toc_float:
+      collapsed: yes
 header_includes:
   - \usepackage{amsmath, mathtools}
   - \usepackage[mathscr]{euscript}
 ---
    
-# <span style="font-family:Georgia; font-size:0.65em;"> Estimate $\pi_0$ using section 4.5 methods  </span>
+# Section 5.1
+
+```{r}
+knitr::opts_knit$set(results = 'markup')
+```
+
+## Estimate $\pi_0$ using section 4.5 methods
+
+### Prostate data
 
 The `prostz.RData` consists of 6,033 z-values from the prostate cancer data analysis example. 
 
 ```{r}
 load(file.path("/Users/valeriewelty/Dropbox/Vandy/SEDS Lab Group/lsi", "prostz.RData"))
 length(prostz)
+prostz = prostz[which(abs(prostz) <= 4.5)]
 ```
 
 In this example, we take $\mathscr{A}_0$ to be the central $\alpha_0$ proportion of the $f_0$ distribution as on page 60. Here we use $\alpha_0 = 0.5$ and $f_0$ is $\mathscr{N}(0, 1)$ such that   
@@ -25,7 +37,7 @@ In this example, we take $\mathscr{A}_0$ to be the central $\alpha_0$ proportion
 & = \left[ -0.6745, 0.6745 \right] 
 \end{align}
 
-```{r, results = "markup"}
+```{r}
 (a0 = 0.5)
 (A0 = qnorm(0.5 + c(-1, 1) * a0/2))
 ```
@@ -39,7 +51,7 @@ length(which(prostz >= A0[1] & prostz <= A0[2]))
 Recall that $E[N_+(\mathscr{A}_0)] = \pi_0 \cdot N \cdot F_0(\mathscr{A}_0)$ (4.45), suggesting the estimator 
 
 \begin{align}
-\hat{\pi}_0 & = N_+(\mathscr{A}_0)/(N \cdot F_0(\mathscr{A}_0)) \\
+\widehat{\pi}_0 & = N_+(\mathscr{A}_0)/(N \cdot F_0(\mathscr{A}_0)) \\
 & = \frac{2,790}{6,033 \cdot F_0(\mathscr{A}_0)}
 \end{align}
 
@@ -50,7 +62,9 @@ N_plus_A0 = length(which(prostz >= A0[1] & prostz <= A0[2]))
 (pi0 = N_plus_A0/(N * (pnorm(A0[2]) - pnorm(A0[1]))))
 ```
 
-For the DTI data set, $N = 15,443$ and $N_+(\mathscr{A}_0) = 7,165$ and therefore $\hat{\pi}_0 = $. 
+### DTI data
+
+For the DTI data set, $N = 15,443$ and $N_+(\mathscr{A}_0) = 7,165$ and therefore $\widehat{\pi}_0 = $. 
 
 ```{r}
 load(file.path("/Users/valeriewelty/Dropbox/Vandy/SEDS Lab Group/lsi", "DTIdata.Rda"))
@@ -63,7 +77,7 @@ DTIz = DTIdata[, 'z.value']
 
 
 
-Recreate Figure 4.5: 
+### Recreate Figure 4.5
 
 ```{r}
 
@@ -133,4 +147,98 @@ legend('bottomright', c('prostate', 'DTI'), lty = c(1, 2), bty = 'n')
 ```
 
 
+# Section 5.2
 
+## Lindsey's method to recreate Figure 5.1 and Figure 5.2 (estimation of false discovery rates) using $\widehat{f}$
+
+The example on page 78 for estimating $\widehat{fdr}$ versus $\bar{fdr}$ is indicated by the pink lines
+
+```{r}
+N = 6033 
+  # N = length(prostz)
+N_plus_A0 = length(which(prostz >= A0[1] & prostz <= A0[2]))
+# pi0 = N_plus_A0/(N * (pnorm(A0[2]) - pnorm(A0[1])))
+  pi0 = 0.932
+
+z = seq(-4.5, 4.5, by=0.01)
+
+K = 90
+d = 0.1
+J = 7
+breaks = seq(-4.5, 4.5, d)
+length(breaks)-1 == K
+
+h = hist(prostz, breaks=breaks, plot=F)
+(scale = N*d)
+
+# Lindsey's method
+Zk = h$breaks
+yk = h$counts
+xk = h$mids
+
+# fit = glm(yk ~ poly(xk, J, raw=T), family="poisson")
+fit = glm(yk ~ splines::ns(xk, df=J), family="poisson")
+
+yhat_xk = predict(fit, newdata = data.frame(xk = xk), type = 'response')
+yhat_z = predict(fit, newdata = data.frame(xk = z), type = 'response')
+
+f0_xk = dnorm(xk, 0, 1)
+f0_z = dnorm(z, 0, 1)
+
+## Figure 5.1 
+plot(h, main='Prostate data', xlab='z values', ylab='counts')
+  # scaled estimate pi0*f0(z)
+  lines(z, scale*pi0*f0_z, lty=2)
+  # estimate for mixture using Lindsey's method
+  lines(z, yhat_z, lty=1)
+  abline(h = c(4.49, 8), col = 'lightpink', lty=3)
+  abline(v = c(3.2, 3.3), col = 'lightpink', lty=3)
+  
+
+```
+
+Estimate local fdr with example bin $k = 78$ (on page 78... wonder if that was a coincidence `r emo::ji("thinking")`). Bin $k=78$ corresponds to $z \in [3.2, 3.3)$, and is observed to contain $y_k = 8$ values. 
+
+The smooth estimate of the local fdr is 
+
+\begin{align}
+\widehat{fdr}(x_k) & = \frac{\widehat{\pi}_0 f_0(x_k)}{\widehat{f}(x_k)} \hskip 5mm \text{(5.5)} \\
+& =  \frac{\widehat{\pi}_0 f_0(x_k)}{\widehat{f}(x_k)} \cdot \frac{N \cdot d}{N \cdot d} \\
+& = \frac{N \cdot \hat{\pi}_0 \cdot f_0(x_k) \cdot d}{N \cdot d \cdot \hat{f}(x_k)} \\
+& \approx \frac{N \cdot \widehat{\pi}_0 \cdot [F_0(x_k + d/2) - F_0(x_k - d/2)]}{N \cdot d \cdot \widehat{f}(x_k)} \\
+& = \frac{e_{0k}}{\widehat{y}_k}
+& = \frac{1.14}{4.49} \\
+& = 0.254
+\end{align}
+
+```{r}
+
+## Example p.78 - bin k = 78
+# equation (5.20)
+(e0k = N*pi0*dnorm(xk[78])*d)
+(yhat_xk[78])
+(fdr_hat_78 = e0k/(yhat_xk[78]))
+
+## ways to calculate the null expected count:  
+N*pi0*(pnorm(xk[78]+d/2) - pnorm(xk[78]-d/2)); N*pi0*dnorm(xk[78])*d
+
+## Estimate local fdr [and tail area Fdr]
+e0k = N*d*pi0*f0_xk
+fdr_hat_xk = e0k/yhat_xk
+fdr_bar_xk = e0k/yk
+# Fdr = pi0*f0/(...)  
+  
+## Figure 5.2
+plot(xk, pmin(fdr_hat_xk, 1), lty=1, type='l')  
+
+## Table 5.1
+k = seq(76, 83)
+knitr::kable(cbind(k, 'xk'=xk[k], 'e0k'=e0k[k], 'yk'=yk[k], 'fdr_bar'=fdr_bar_xk[k], 'y_hat'=yhat_xk[k], 'fdr_hat'=fdr_hat_xk[k]), row.names = F)
+  
+```
+
+
+
+
+
+* Note: by default, the function `locfdr` replaces the polynomial exponent with a natural spline basis
