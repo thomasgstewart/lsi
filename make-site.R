@@ -18,6 +18,6 @@ make_index <- function(){
   cat(head, body, sep = "", file = "index.Rmd")
 }
 
-make_index()
+#make_index()
 
 rmarkdown::render_site()

@@ -19,8 +19,8 @@ require(tgsify)
 library(locfdr)
 library(splines)
 
-setwd("/Users/christinatripp2/Dropbox/SEDSLab/LSI Book/Examples/Chapter5locfdr")
-load("prostz.Rda")
+#setwd("/Users/christinatripp2/Dropbox/SEDSLab/LSI Book/Examples/Chapter5locfdr")
+load("prostz.RData")
 # head(prostz) # z-stats
 
 

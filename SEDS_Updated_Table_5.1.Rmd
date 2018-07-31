@@ -18,8 +18,7 @@ require(tgsify)
 library(locfdr)
 library(splines)
 
-setwd("/Users/meganhollister/Dropbox/SEDSLab/LSI Book/Examples/Chapter5locfdr")
-load("prostz.Rda")
+load("prostz.RData")
 # head(prostz) # z-stats
 
 locfdrplot <- locfdr(prostz)
@@ -112,9 +111,8 @@ round(table2[76:83,],3)
 #Tom's code
 ```{r include=FALSE}
 library(magrittr)
-setwd("/Users/meganhollister/Dropbox/SEDSLab/LSI Book/Examples/Prostate Example")
-load("prostatedata.Rda")
-pd <- prostatedata
+
+pd <- prostz
 status <- pd %>% colnames %>% as.numeric %>% `[`(c("No cancer","Cancer"), .)
 tvalue <- function(x, g) t.test(x ~ g) #%>% le("statistic")
 #zs <- pd %>% apply(1, tvalue, g = status) %>% pt(100) %>% qnorm

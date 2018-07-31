@@ -1,9 +1,12 @@
 ---
 title: LSI section 5.1
 output: html_document
+editor_options: 
+  chunk_output_type: console
 ---
 
-```{r}
+```{r prostate}
+set.seed(2353)
 suppressMessages(require(tgsify))
 prostate <-  "http://statweb.stanford.edu/~ckirby/brad/LSI/datasets-and-programs/data/prostatedata.RData" %>% 
   url  
@@ -26,6 +29,12 @@ zs <- pd %>% apply(1, tvalue, g = status) %>% pt(100) %>% qnorm
 # load(con); close(con)
 # plot(prostz, zs)
 # max(prostz - zs)
+```
+
+## Truncate zs greater than 4.5
+
+```{r}
+#zs <- zs[abs(zs) <= 4.5]
 ```
 
 
@@ -140,7 +149,7 @@ legend("topleft", c("The value of a in the book", "The value of π in the book")
 
 ## DTI data
 
-```{r}
+```{r dti}
 con <- "http://statweb.stanford.edu/~ckirby/brad/LSI/datasets-and-programs/data/DTIdata.RData" %>% url
 load(con); close(con)
 

@@ -197,7 +197,8 @@ $(document).ready(function () {
 </div>
 
 
-<pre class="r"><code>suppressMessages(require(tgsify))
+<pre class="r"><code>set.seed(2353)
+suppressMessages(require(tgsify))
 prostate &lt;-  &quot;http://statweb.stanford.edu/~ckirby/brad/LSI/datasets-and-programs/data/prostatedata.RData&quot; %&gt;% 
   url  
 load(prostate)
@@ -215,6 +216,10 @@ zs &lt;- pd %&gt;% apply(1, tvalue, g = status) %&gt;% pt(100) %&gt;% qnorm
 # load(con); close(con)
 # plot(prostz, zs)
 # max(prostz - zs)</code></pre>
+<div id="truncate-zs-greater-than-4.5" class="section level2">
+<h2>Truncate zs greater than 4.5</h2>
+<pre class="r"><code>#zs &lt;- zs[abs(zs) &lt;= 4.5]</code></pre>
+</div>
 <div id="estimation-of-pi_0-section-4.5" class="section level2">
 <h2>Estimation of <span class="math inline">\(\pi_0\)</span> (Section 4.5)</h2>
 <p>Recall the setup of the mixture model:</p>
@@ -325,7 +330,7 @@ book1 &lt;- estimate_pi(DTIdata[,4], 0.75)
 points(.75, book1, col = &quot;red&quot;, cex = 2)
 abline(h = 0.935, col = &quot;blue&quot;)
 legend(&quot;topleft&quot;, c(&quot;The value of a in the book&quot;, &quot;The value of π in the book?&quot;), col = c(&quot;red&quot;,&quot;blue&quot;), pch = 16, bty = &quot;n&quot;)</code></pre>
-<p><img src="2018-07-17-lsi-5-1_files/figure-html/unnamed-chunk-8-1.png" width="672" /></p>
+<p><img src="2018-07-17-lsi-5-1_files/figure-html/dti-1.png" width="672" /></p>
 </div>
 <div id="lindsays-methods-for-esimating-fz" class="section level2">
 <h2>Lindsay’s methods for esimating f(z)</h2>
@@ -346,7 +351,7 @@ yhat &lt;- glm1 %&gt;% predict(type = &quot;response&quot;)
 
 lines(mp, yhat, col = &quot;purple&quot;, lwd = 3)
 box()</code></pre>
-<p><img src="2018-07-17-lsi-5-1_files/figure-html/unnamed-chunk-9-1.png" width="672" /></p>
+<p><img src="2018-07-17-lsi-5-1_files/figure-html/unnamed-chunk-8-1.png" width="672" /></p>
 </div>
 <div id="ecdf-methods-for-esimating-fz" class="section level2">
 <h2>ECDF methods for esimating f(z)</h2>
@@ -362,7 +367,7 @@ sigmoid &lt;- function(x) 1/(1+exp(-x))
 
 l1 &lt;- lm(logodds(pz) ~ poly(zs, degree = 3))
 points(zs, sigmoid(l1$fitted), col = &quot;purple&quot;)</code></pre>
-<p><img src="2018-07-17-lsi-5-1_files/figure-html/unnamed-chunk-10-1.png" width="672" /></p>
+<p><img src="2018-07-17-lsi-5-1_files/figure-html/unnamed-chunk-9-1.png" width="672" /></p>
 <pre class="r"><code>p_lo &lt;- predict(l1,newdata=data.frame(zs = lo)) %&gt;% sigmoid
 p_up &lt;- predict(l1,newdata=data.frame(zs = up)) %&gt;% sigmoid
 phat &lt;- p_up - p_lo
@@ -373,7 +378,7 @@ lines(mp, yhat, col = &quot;purple&quot;, lwd = 3)
 lines(mp, nhat, col = &quot;darkgreen&quot;, lwd = 3)
 box()
 legend(&quot;topleft&quot;, c(&quot;Lindsay&#39;s&quot;,&quot;ECDF&quot;), lwd = 3, col = c(&quot;purple&quot;,&quot;darkgreen&quot;), bty = &#39;n&#39;)</code></pre>
-<p><img src="2018-07-17-lsi-5-1_files/figure-html/unnamed-chunk-10-2.png" width="672" /></p>
+<p><img src="2018-07-17-lsi-5-1_files/figure-html/unnamed-chunk-9-2.png" width="672" /></p>
 </div>
 
 

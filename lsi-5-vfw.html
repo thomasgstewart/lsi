@@ -303,17 +303,17 @@ div.tocify {
 <div id="prostate-data" class="section level3">
 <h3>Prostate data</h3>
 <p>The <code>prostz.RData</code> consists of 6,033 z-values from the prostate cancer data analysis example.</p>
-<pre class="r"><code>load(file.path(&quot;/Users/valeriewelty/Dropbox/Vandy/SEDS Lab Group/lsi&quot;, &quot;prostz.RData&quot;))
+<pre class="r"><code>load(&quot;prostz.RData&quot;)
 length(prostz)</code></pre>
 <pre><code>## [1] 6033</code></pre>
 <pre class="r"><code>prostz = prostz[which(abs(prostz) &lt;= 4.5)]</code></pre>
 <p>In this example, we take <span class="math inline">\(\mathscr{A}_0\)</span> to be the central <span class="math inline">\(\alpha_0\)</span> proportion of the <span class="math inline">\(f_0\)</span> distribution as on page 60. Here we use <span class="math inline">\(\alpha_0 = 0.5\)</span> and <span class="math inline">\(f_0\)</span> is <span class="math inline">\(\mathscr{N}(0, 1)\)</span> such that</p>
-<span class="math display">\[\begin{align}
+\begin{align}
 \mathscr{A}_0 &amp; = \left[ \Phi^{-1} (0.5 - \alpha_0/2), \Phi^{-1}(0.5+\alpha_0/2) \right] \\
 &amp; = \left[ \Phi^{-1} (0.5 - 0.5/2), \Phi^{-1}(0.5+0.5/2) \right] \\
 &amp; = \left[ \Phi^{-1} (0.25), \Phi^{-1}(0.75) \right] \\
 &amp; = \left[ -0.6745, 0.6745 \right] 
-\end{align}\]</span>
+\end{align}
 <pre class="r"><code>(a0 = 0.5)</code></pre>
 <pre><code>## [1] 0.5</code></pre>
 <pre class="r"><code>(A0 = qnorm(0.5 + c(-1, 1) * a0/2))</code></pre>
@@ -322,10 +322,10 @@ length(prostz)</code></pre>
 <pre class="r"><code>length(which(prostz &gt;= A0[1] &amp; prostz &lt;= A0[2]))</code></pre>
 <pre><code>## [1] 2790</code></pre>
 <p>Recall that <span class="math inline">\(E[N_+(\mathscr{A}_0)] = \pi_0 \cdot N \cdot F_0(\mathscr{A}_0)\)</span> (4.45), suggesting the estimator</p>
-<span class="math display">\[\begin{align}
+\begin{align}
 \widehat{\pi}_0 &amp; = N_+(\mathscr{A}_0)/(N \cdot F_0(\mathscr{A}_0)) \\
 &amp; = \frac{2,790}{6,033 \cdot F_0(\mathscr{A}_0)}
-\end{align}\]</span>
+\end{align}
 <pre class="r"><code>N = length(prostz)
 N_plus_A0 = length(which(prostz &gt;= A0[1] &amp; prostz &lt;= A0[2]))
 
@@ -335,7 +335,7 @@ N_plus_A0 = length(which(prostz &gt;= A0[1] &amp; prostz &lt;= A0[2]))
 <div id="dti-data" class="section level3">
 <h3>DTI data</h3>
 <p>For the DTI data set, <span class="math inline">\(N = 15,443\)</span> and <span class="math inline">\(N_+(\mathscr{A}_0) = 7,165\)</span> and therefore $_0 = $.</p>
-<pre class="r"><code>load(file.path(&quot;/Users/valeriewelty/Dropbox/Vandy/SEDS Lab Group/lsi&quot;, &quot;DTIdata.Rda&quot;))
+<pre class="r"><code>load(&quot;DTIdata.Rda&quot;)
 DTIz = DTIdata[, &#39;z.value&#39;]
   
 (N = length(DTIz))</code></pre>
@@ -460,7 +460,7 @@ plot(h, main=&#39;Prostate data&#39;, xlab=&#39;z values&#39;, ylab=&#39;counts&
 <p><img src="lsi-5-vfw_files/figure-html/unnamed-chunk-8-1.png" width="672" /></p>
 <p>Estimate local fdr with example bin <span class="math inline">\(k = 78\)</span> (on page 78… wonder if that was a coincidence 🤔). Bin <span class="math inline">\(k=78\)</span> corresponds to <span class="math inline">\(z \in [3.2, 3.3)\)</span>, and is observed to contain <span class="math inline">\(y_k = 8\)</span> values.</p>
 <p>The smooth estimate of the local fdr is</p>
-<span class="math display">\[\begin{align}
+\begin{align}
 \widehat{fdr}(x_k) &amp; = \frac{\widehat{\pi}_0 f_0(x_k)}{\widehat{f}(x_k)} \hskip 5mm \text{(5.5)} \\
 &amp; =  \frac{\widehat{\pi}_0 f_0(x_k)}{\widehat{f}(x_k)} \cdot \frac{N \cdot d}{N \cdot d} \\
 &amp; = \frac{N \cdot \hat{\pi}_0 \cdot f_0(x_k) \cdot d}{N \cdot d \cdot \hat{f}(x_k)} \\
@@ -468,7 +468,7 @@ plot(h, main=&#39;Prostate data&#39;, xlab=&#39;z values&#39;, ylab=&#39;counts&
 &amp; = \frac{e_{0k}}{\widehat{y}_k}
 &amp; = \frac{1.14}{4.49} \\
 &amp; = 0.254
-\end{align}\]</span>
+\end{align}
 <pre class="r"><code>## Example p.78 - bin k = 78
 # equation (5.20)
 (e0k = N*pi0*dnorm(xk[78])*d)</code></pre>

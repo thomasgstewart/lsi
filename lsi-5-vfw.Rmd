@@ -23,7 +23,7 @@ knitr::opts_knit$set(results = 'markup')
 The `prostz.RData` consists of 6,033 z-values from the prostate cancer data analysis example. 
 
 ```{r}
-load(file.path("/Users/valeriewelty/Dropbox/Vandy/SEDS Lab Group/lsi", "prostz.RData"))
+load("prostz.RData")
 length(prostz)
 prostz = prostz[which(abs(prostz) <= 4.5)]
 ```
@@ -67,7 +67,7 @@ N_plus_A0 = length(which(prostz >= A0[1] & prostz <= A0[2]))
 For the DTI data set, $N = 15,443$ and $N_+(\mathscr{A}_0) = 7,165$ and therefore $\widehat{\pi}_0 = $. 
 
 ```{r}
-load(file.path("/Users/valeriewelty/Dropbox/Vandy/SEDS Lab Group/lsi", "DTIdata.Rda"))
+load("DTIdata.Rda")
 DTIz = DTIdata[, 'z.value']
   
 (N = length(DTIz))
