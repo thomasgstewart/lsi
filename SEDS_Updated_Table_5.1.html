@@ -223,24 +223,23 @@ $(document).ready(function () {
 ## Table 5.1 ##
 ###############
 # Now try adding back the 2 omitted observations into bin 90:
-y[90] # currently 1 observation in bin 90</code></pre>
-<pre><code>## [1] 1</code></pre>
-<pre class="r"><code>y[90]&lt;- 3
-yhat&lt;- glm(y~ns(x,df=df),poisson)$fit # the expected value of Y, i.e. yhat
+#y[90]  currently 1 observation in bin 90
+y[90]&lt;- 3
+#yhat&lt;- glm(y~ns(x,df=df),poisson)$fit # the expected value of Y, i.e. yhat
 e0 &lt;- N*d*pi0*dnorm(x) # expected null count
 fdrBar &lt;- e0/y
 fdrHat &lt;- e0/yhat
 table2 &lt;- cbind(k,x,e0,y,fdrBar,yhat,fdrHat) # recreating table 5.1
 round(table2[76:83,],3)</code></pre>
 <pre><code>##     k    x    e0 y fdrBar  yhat fdrHat
-## 76 76 3.05 2.142 4  0.536 5.961  0.359
-## 77 77 3.15 1.571 9  0.175 5.140  0.306
-## 78 78 3.25 1.141 8  0.143 4.487  0.254
-## 79 79 3.35 0.820 2  0.410 3.966  0.207
-## 80 80 3.45 0.584 4  0.146 3.546  0.165
-## 81 81 3.55 0.411 4  0.103 3.203  0.128
-## 82 82 3.65 0.287 4  0.072 2.920  0.098
-## 83 83 3.75 0.198 1  0.198 2.685  0.074</code></pre>
+## 76 76 3.05 2.142 4  0.536 6.016  0.356
+## 77 77 3.15 1.571 9  0.175 5.150  0.305
+## 78 78 3.25 1.141 8  0.143 4.454  0.256
+## 79 79 3.35 0.820 2  0.410 3.890  0.211
+## 80 80 3.45 0.584 4  0.146 3.430  0.170
+## 81 81 3.55 0.411 4  0.103 3.050  0.135
+## 82 82 3.65 0.287 4  0.072 2.732  0.105
+## 83 83 3.75 0.198 1  0.198 2.465  0.080</code></pre>
 <pre class="r"><code># Now the table (specifically column yhat) matches book perfectly.
 
 #################################
@@ -267,28 +266,85 @@ lines(mp, nhat, col = &quot;darkgreen&quot;, lwd = 3)
 box()
 legend(&quot;topleft&quot;, c(&quot;Lindsay&#39;s&quot;,&quot;ECDF&quot;), lwd = 3, col = c(&quot;purple&quot;,&quot;darkgreen&quot;), bty = &#39;n&#39;)</code></pre>
 <p><img src="SEDS_Updated_Table_5.1_files/figure-html/unnamed-chunk-5-1.png" width="672" /></p>
+<pre class="r"><code>#Change bin size
+hist(zs, breaks = 180, col = &quot;#ad000070&quot;,border = &quot;white&quot;, main=&quot;Histogram with Smaller Bins&quot;)
+lines(mp2, yhat2, col = &quot;purple&quot;, lwd = 3)
+lines(mp2, nhat2, col = &quot;darkgreen&quot;, lwd = 3)
+box()
+legend(&quot;topleft&quot;, c(&quot;Lindsay&#39;s&quot;,&quot;ECDF&quot;), lwd = 3, col = c(&quot;purple&quot;,&quot;darkgreen&quot;), bty = &#39;n&#39;)</code></pre>
+<p><img src="SEDS_Updated_Table_5.1_files/figure-html/unnamed-chunk-5-2.png" width="672" /></p>
+<pre class="r"><code>hist(zs, breaks = 36, col = &quot;#ad000070&quot;,border = &quot;white&quot;, ylim=c(0,600), main = &quot;Histogram with Larger Bins&quot;)
+lines(mp3, yhat3, col = &quot;purple&quot;, lwd = 3)
+lines(mp3, nhat3, col = &quot;darkgreen&quot;, lwd = 3)
+box()
+legend(&quot;topleft&quot;, c(&quot;Lindsay&#39;s&quot;,&quot;ECDF&quot;), lwd = 3, col = c(&quot;purple&quot;,&quot;darkgreen&quot;), bty = &#39;n&#39;)</code></pre>
+<p><img src="SEDS_Updated_Table_5.1_files/figure-html/unnamed-chunk-5-3.png" width="672" /></p>
 </div>
 <div id="megans-additional-code-and-graph" class="section level1">
 <h1>Megan’s additional code and graph</h1>
 <pre class="r"><code>ytilde &lt;- nhat
 fdrtilde &lt;- e0/ytilde
 
+ytilde2 &lt;- nhat2
+fdrtilde2 &lt;- e02/ytilde2
+edit2 &lt;- ytilde2[seq(1,length(ytilde2),2)]
+
+ytilde3 &lt;- nhat3
+fdrtilde3 &lt;- e03/ytilde3
+
 table3 &lt;- cbind(table2, ytilde, fdrtilde) 
+table4 &lt;- cbind(x2, ytilde2, fdrtilde2) 
+table5 &lt;- cbind(x3, ytilde3, fdrtilde3) 
+
 round(table3[76:83,],3)</code></pre>
 <pre><code>##     k    x    e0 y fdrBar  yhat fdrHat ytilde fdrtilde
-## 76 76 3.05 2.142 4  0.536 5.961  0.359  7.314    0.293
-## 77 77 3.15 1.571 9  0.175 5.140  0.306  6.155    0.255
-## 78 78 3.25 1.141 8  0.143 4.487  0.254  5.168    0.221
-## 79 79 3.35 0.820 2  0.410 3.966  0.207  4.330    0.189
-## 80 80 3.45 0.584 4  0.146 3.546  0.165  3.619    0.161
-## 81 81 3.55 0.411 4  0.103 3.203  0.128  3.018    0.136
-## 82 82 3.65 0.287 4  0.072 2.920  0.098  2.511    0.114
-## 83 83 3.75 0.198 1  0.198 2.685  0.074  2.084    0.095</code></pre>
+## 76 76 3.05 2.142 4  0.536 6.016  0.356  7.314    0.293
+## 77 77 3.15 1.571 9  0.175 5.150  0.305  6.155    0.255
+## 78 78 3.25 1.141 8  0.143 4.454  0.256  5.168    0.221
+## 79 79 3.35 0.820 2  0.410 3.890  0.211  4.330    0.189
+## 80 80 3.45 0.584 4  0.146 3.430  0.170  3.619    0.161
+## 81 81 3.55 0.411 4  0.103 3.050  0.135  3.018    0.136
+## 82 82 3.65 0.287 4  0.072 2.732  0.105  2.511    0.114
+## 83 83 3.75 0.198 1  0.198 2.465  0.080  2.084    0.095</code></pre>
+<pre class="r"><code>round(table4[154:166,],3)</code></pre>
+<pre><code>##        x2 ytilde2 fdrtilde2
+## 154 3.175   2.944     0.247
+## 155 3.225   2.698     0.229
+## 156 3.275   2.470     0.213
+## 157 3.325   2.261     0.197
+## 158 3.375   2.068     0.182
+## 159 3.425   1.891     0.168
+## 160 3.475   1.728     0.155
+## 161 3.525   1.578     0.142
+## 162 3.575   1.440     0.131
+## 163 3.625   1.313     0.120
+## 164 3.675   1.197     0.109
+## 165 3.725   1.091     0.100
+## 166 3.775   0.993     0.091</code></pre>
+<pre class="r"><code>round(table5[28:36,],3)</code></pre>
+<pre><code>##       x3 ytilde3 fdrtilde3
+## 28 2.375  55.555     0.601
+## 29 2.625  37.341     0.479
+## 30 2.875  24.741     0.364
+## 31 3.125  16.167     0.263
+## 32 3.375  10.419     0.181
+## 33 3.625   6.619     0.119
+## 34 3.875   4.143     0.074
+## 35 4.125   2.553     0.044
+## 36 4.375   1.547     0.025</code></pre>
 <pre class="r"><code>plot(x, fdrBar, type = &quot;l&quot;)
 lines(x,fdrHat, col=&quot;red&quot;)
 lines(x, fdrtilde, col=&quot;blue&quot;)
-legend(&quot;topright&quot;, c(&quot;fdrBar&quot;,&quot;fdrHat&quot;, &quot;fdrTilde&quot;), lwd = 3, col = c(&quot;black&quot;,&quot;red&quot;, &quot;blue&quot;), bty = &#39;n&#39;)</code></pre>
+lines(x2, fdrtilde2, col=&quot;green&quot;)
+lines(x3, fdrtilde3, col=&quot;pink&quot;)
+legend(&quot;topright&quot;, c(&quot;fdrBar&quot;,&quot;fdrHat&quot;, &quot;fdrTilde&quot;, &quot;fdrTilde2&quot;, &quot;fdrTilde3&quot;), lwd = 3, col = c(&quot;black&quot;,&quot;red&quot;, &quot;blue&quot;, &quot;green&quot;, &quot;pink&quot;), bty = &#39;n&#39;)</code></pre>
 <p><img src="SEDS_Updated_Table_5.1_files/figure-html/unnamed-chunk-6-1.png" width="672" /></p>
+<pre class="r"><code>plot(x, fdrHat, col=&quot;red&quot;, type = &quot;l&quot;, ylim = c(0.96,0.975), xlim= c(-0.1,0.1), lwd=4)
+lines(x, fdrtilde, col=&quot;blue&quot;, lwd=4)
+lines(x2, fdrtilde2, col=&quot;green&quot;, lwd=4)
+lines(x3, fdrtilde3, col=&quot;pink&quot;, lwd=4)
+legend(&quot;topright&quot;, c(&quot;fdrHat&quot;, &quot;fdrTilde&quot;, &quot;fdrTilde2&quot;, &quot;fdrTilde3&quot;), lwd = 3, col = c(&quot;red&quot;, &quot;blue&quot;, &quot;green&quot;, &quot;pink&quot;), bty = &#39;n&#39;)</code></pre>
+<p><img src="SEDS_Updated_Table_5.1_files/figure-html/unnamed-chunk-6-2.png" width="672" /></p>
 </div>
 
 

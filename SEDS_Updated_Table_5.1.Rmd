@@ -82,9 +82,9 @@ sum(height*d) # = 6031*.1
 ## Table 5.1 ##
 ###############
 # Now try adding back the 2 omitted observations into bin 90:
-y[90] # currently 1 observation in bin 90
+#y[90]  currently 1 observation in bin 90
 y[90]<- 3
-yhat<- glm(y~ns(x,df=df),poisson)$fit # the expected value of Y, i.e. yhat
+#yhat<- glm(y~ns(x,df=df),poisson)$fit # the expected value of Y, i.e. yhat
 e0 <- N*d*pi0*dnorm(x) # expected null count
 fdrBar <- e0/y
 fdrHat <- e0/yhat
@@ -142,10 +142,78 @@ phat <- p_up - p_lo
 nhat <- phat * length(zs)
 mp <- .5*lo + .5*up
 ```
+
+```{r}
+###################################
+#######Change width of bins########
+###################################
+
+#Smaller Bin Size
+bin2<- 180 # number of bins
+N<- length(prostz) # number of cases=6033, used to match his results 
+d2<- 0.05 # bin width
+df<- 7 # J= degrees of freedom
+
+breaks2 <- seq(-4.5, 4.5, d2)
+zh2 <- hist(prostzcut, breaks = breaks2, plot = F)
+y2 <- zh2$counts # y = the number of counts in each of the 90 bins
+x2 <- zh2$mids # note this equals the midpoints x of each bin
+yhat2 <- glm(y2 ~ ns(x2,df=df), poisson)$fit
+e02 <- N*d2*pi0*dnorm(x2)
+
+ws2 <- cut(zs, breaks = seq(-4.5, 4.5, by = d2))
+labs2 <- levels(ws2)
+lo2 <- labs2 %>% sub("\\((.+),.*", "\\1", .) %>% as.numeric
+up2 <- labs2 %>% sub("[^,]*,([^]]*)\\]", "\\1", .) %>% as.numeric
+
+p_lo2 <- predict(l1,newdata=data.frame(zs = lo2)) %>% sigmoid
+p_up2 <- predict(l1,newdata=data.frame(zs = up2)) %>% sigmoid
+phat2 <- p_up2 - p_lo2
+nhat2 <- phat2 * length(zs)
+mp2 <- .5*lo2 + .5*up2
+
+#####Larger Bin size
+bin3<- 36 # number of bins
+N<- length(prostz) # number of cases=6033, used to match his results 
+d3<- 0.25 # bin width
+df<- 7 # J= degrees of freedom
+
+breaks3 <- seq(-4.5, 4.5, d3)
+zh3 <- hist(prostzcut, breaks = breaks3, plot = F)
+y3 <- zh3$counts # y = the number of counts in each of the 90 bins
+x3 <- zh3$mids # note this equals the midpoints x of each bin
+yhat3 <- glm(y3 ~ ns(x3,df=df), poisson)$fit
+e03 <- N*d3*pi0*dnorm(x3)
+
+ws3 <- cut(zs, breaks = seq(-4.5, 4.5, by = .d3))
+labs3 <- levels(ws3)
+lo3 <- labs3 %>% sub("\\((.+),.*", "\\1", .) %>% as.numeric
+up3 <- labs3 %>% sub("[^,]*,([^]]*)\\]", "\\1", .) %>% as.numeric
+
+p_lo3 <- predict(l1,newdata=data.frame(zs = lo3)) %>% sigmoid
+p_up3 <- predict(l1,newdata=data.frame(zs = up3)) %>% sigmoid
+phat3 <- p_up3 - p_lo3
+nhat3 <- phat3 * length(zs)
+mp3 <- .5*lo3 + .5*up3
+```
+
 ```{r}
 hist(zs, breaks = 90, col = "#ad000070",border = "white")
 lines(mp, yhat, col = "purple", lwd = 3)
 lines(mp, nhat, col = "darkgreen", lwd = 3)
+box()
+legend("topleft", c("Lindsay's","ECDF"), lwd = 3, col = c("purple","darkgreen"), bty = 'n')
+
+#Change bin size
+hist(zs, breaks = 180, col = "#ad000070",border = "white", main="Histogram with Smaller Bins")
+lines(mp2, yhat2, col = "purple", lwd = 3)
+lines(mp2, nhat2, col = "darkgreen", lwd = 3)
+box()
+legend("topleft", c("Lindsay's","ECDF"), lwd = 3, col = c("purple","darkgreen"), bty = 'n')
+
+hist(zs, breaks = 36, col = "#ad000070",border = "white", ylim=c(0,600), main = "Histogram with Larger Bins")
+lines(mp3, yhat3, col = "purple", lwd = 3)
+lines(mp3, nhat3, col = "darkgreen", lwd = 3)
 box()
 legend("topleft", c("Lindsay's","ECDF"), lwd = 3, col = c("purple","darkgreen"), bty = 'n')
 ```
@@ -155,13 +223,33 @@ legend("topleft", c("Lindsay's","ECDF"), lwd = 3, col = c("purple","darkgreen"),
 ytilde <- nhat
 fdrtilde <- e0/ytilde
 
+ytilde2 <- nhat2
+fdrtilde2 <- e02/ytilde2
+edit2 <- ytilde2[seq(1,length(ytilde2),2)]
+
+ytilde3 <- nhat3
+fdrtilde3 <- e03/ytilde3
+
 table3 <- cbind(table2, ytilde, fdrtilde) 
+table4 <- cbind(x2, ytilde2, fdrtilde2) 
+table5 <- cbind(x3, ytilde3, fdrtilde3) 
+
 round(table3[76:83,],3)
+round(table4[154:166,],3)
+round(table5[28:36,],3)
 
 plot(x, fdrBar, type = "l")
 lines(x,fdrHat, col="red")
 lines(x, fdrtilde, col="blue")
-legend("topright", c("fdrBar","fdrHat", "fdrTilde"), lwd = 3, col = c("black","red", "blue"), bty = 'n')
+lines(x2, fdrtilde2, col="green")
+lines(x3, fdrtilde3, col="pink")
+legend("topright", c("fdrBar","fdrHat", "fdrTilde", "fdrTilde2", "fdrTilde3"), lwd = 3, col = c("black","red", "blue", "green", "pink"), bty = 'n')
+
+plot(x, fdrHat, col="red", type = "l", ylim = c(0.96,0.975), xlim= c(-0.1,0.1), lwd=4)
+lines(x, fdrtilde, col="blue", lwd=4)
+lines(x2, fdrtilde2, col="green", lwd=4)
+lines(x3, fdrtilde3, col="pink", lwd=4)
+legend("topright", c("fdrHat", "fdrTilde", "fdrTilde2", "fdrTilde3"), lwd = 3, col = c("red", "blue", "green", "pink"), bty = 'n')
 ```
 
 
