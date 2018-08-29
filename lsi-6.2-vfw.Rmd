@@ -1,0 +1,175 @@
+---
+title: "LSI Section 6 VFW"
+output:
+  html_document:
+    toc: TRUE
+    toc_float:
+      collapsed: yes
+header_includes:
+  - \usepackage{amsmath, mathtools}
+  - \usepackage[mathscr]{euscript}
+---
+  
+## Modified Central Matching Estimation for the Empirical Null
+
+Review the central matching estimation for the empirical null described in Efron section 6.2, an example with the HIV<!-- and simulated data -->, and a modified version of the central matching approach that constrains the empirical null mean to be equal to 0.   
+  
+### Central Matching Estimation of $(\delta_0, \sigma_0, \pi_0)$
+
+Define $f_{\pi 0}(z) = \pi_0 f_0(z)$ so that $fdr(z) = f_{\pi 0}(z)/f(z)$. We assume that $f_0(z)$ is normal but not necessarily $N(0, 1)$, say $f_0(z) \sim N(\delta_0, \sigma_0^2)$ (Efron, p. 98). 
+
+Therefore, the $f_{\pi 0}(z)$ is estimated by 
+
+\begin{align}
+f_{\pi 0}(z) & = \pi_0 f_0(z) \\
+& = \pi_0 \cdot \left[ \frac{1}{\sqrt{2 \pi \sigma_0^2}} \exp \left[ \frac{-1}{2 \sigma_0^2} (z - \delta_0^2) \right] \right] \\
+& = \pi_0 \cdot (2 \pi \sigma_0^2)^{-1/2} \cdot \exp \left[-\frac{1}{2} \left( \frac{z^2}{\sigma_0^2} - \frac{2 z \delta_0}{\sigma_0^2} + \frac{\delta_0^2}{\sigma_0^2} \right)  \right] \\
+& \text {and} \\
+\log (f_{\pi 0}(z)) & = \log (\pi_0) - \frac{1}{2} \log(2 \pi \sigma_0^2) + \left[-\frac{1}{2} \left( \frac{1}{\sigma_0^2} z^2 - \frac{2 \delta_0}{\sigma_0^2} z  + \frac{\delta_0^2}{\sigma_0^2} \right)  \right] \\
+& = \left[\log(\pi_0) - \frac{1}{2} \left( \log(2\pi \sigma_0^2) + \frac{\delta_0^2}{\sigma_0^2 } \right) \right] + \frac{\delta_0}{\sigma_0^2} z - \frac{1}{2\sigma_0^2} z^2.
+\end{align}
+
+Notice that this is a quadratic form. In the central matching approach (as well as in the MLE approach) we make the "zero assumption", in assuming that the mixture distribution $f(z)$ is equal to  $\pi_0 f_0(z)$ near $z=0$ (i.e. for $z \in \mathscr{A}_0$). This is a result of the assumption that $f_1(z)$ is equal to zero within the middle $\mathscr{A}_0$ proportion of the mixture distribution, i.e.
+
+\begin{align}
+f(z) & = \pi_0 f_0(z) + (1-\pi_0) \cdot 0 \\
+& = \pi_0 f_0(z) \\
+& = f_{\pi 0}(z)
+\end{align} 
+
+for $z \in \mathscr{A}_0$. Therefore, because we assume $\log(f(z)) = \log(f_{\pi 0}(z))$ and we observed above that $\log(f_{\pi 0}(z))$ is quadratic, the key assumption of the central matching approach can be stated as 
+
+\begin{align}
+\log(f(z)) = \log(f_{\pi 0}(z)) = \beta_0 + \beta_1 z + \beta_2 z^2 \\
+\end{align}
+
+for $z \in \mathscr{A}_0$, where 
+
+\begin{align}
+\beta_0 & = \log(\pi_0) - \frac{1}{2} \left( \log(2\pi \sigma_0^2) + \frac{\delta_0^2}{\sigma_0^2 } \right) \\
+\beta_1 & = \frac{\delta_0}{\sigma_0^2} \\
+\beta_2 & = - \frac{1}{2\sigma_0^2}. \\
+\end{align}
+
+The coefficients $(\beta_0, \beta_1, \beta_2)$ are estimated via Lindsey's method, with a $J=2$ parameter family, using only the central $\mathscr{A}_0$ proportion of $z_i$ values. More specifically, $\beta_1$ and $\beta_2$ are estimated from the Poisson regression process, and $\beta_0$ is determined from the requirement that $f(z)$ integrates to 1. That is, 
+
+\begin{align}
+\beta_0 & : \\
+& \int f(z) dz = 1 \\
+& \int \exp (\beta_0 + \beta_1 z + \beta_2 z^2) dz = 1 \\
+& ... \\
+& ... 
+\end{align}
+
+
+
+Recall that, briefly, Lindsey's method is an algorithm based on discretizing the $z_i$ values into $K$ bins and it obtains maximum likelihood estimates for $(\beta_1, \beta_2)$ by fitting the observed number of values in each [histogram] bin ($y_k$) against the midpoint of each bin ($x_k$) via a Poisson regression (Section 5.2, p. 75). Note that $K$ and $\mathscr{A}_0$ are tuning parameters of this method. The coefficients $(\delta_0, \sigma_0, \pi_0)$ are then given by
+
+\begin{align}
+\sigma_0 & = \sqrt{-\frac{1}{2 \beta_2}} \\
+\delta_0 & = \beta_1 \sigma_0^2 \\
+& = \beta_1 \left( -\frac{1}{2 \beta_2} \right) \\
+\pi_0 & = \exp \left[\beta_0 + \frac{1}{2} \left( \log (2\pi \sigma_0^2) + \frac{\delta_0^2}{\sigma_0^2}  \right)  \right] \\
+& = \exp \left[\beta_0 + \frac{1}{2} \left( \log (2\pi \sigma_0^2) + \frac{\beta_1^2 \sigma_0^4}{\sigma_0^2}  \right)  \right] \\
+& = \exp \left[\beta_0 + \frac{1}{2} \left( \log (2\pi \sigma_0^2) + \beta_1^2 \sigma_0^2  \right)  \right] \\
+& = \exp \left[\beta_0 + \frac{1}{2} \left( \log \left(2\pi \left( -\frac{1}{2 \beta_2} \right) \right) + \beta_1^2 \left( -\frac{1}{2 \beta_2} \right) \right)  \right] \\
+& = \exp \left[ \beta_0 + \frac{1}{2} \left( \log (-\pi) - \log (\beta_2) - \frac{\beta_1^2}{2 \beta_2} \right) \right]
+\end{align}
+
+
+<!-- 
+**Question: while in section 6.2, Efron makes references to the notation used in section 5.2 (i.e. "estimating $(\beta_0, \beta_2, \beta_3)$ from the histogram counts $y_k$ (5.12) around $z=0$" and "The quadratic approximation $\log \widehat{f}_{\pi 0}(z) = \widehat{\beta}_0 + \widehat{\beta}_1 z + \widehat{\beta}_2 z^2$ was computed as the least square fit to $\log \widehat{f}(z)$ over the central 50% of the $z$-values (with the calculation discretized as in section 5.2)"), it is not 100% clear whether we actually use Lindsey's method, or whether we use some other least squares fit approach (not a Poisson model fit) although the discretization used in the approach is the same as in 5.2?
+-->
+
+
+```{r}
+library(dplyr)
+library(locfdr)
+
+zz = get(data(hivdata)) ## z-scores ## length = 7,680
+  hist(zz, breaks = 100)
+pct = 0 # <- default ## excluded tail proportion of z-scores when fitting f(z)
+pct0 = 1/4 # <- default ## proportion of z-score distr used in fitting null density by central matching; if vector, provides lower and upper tail cutoffs, and if scalar, provides lower tail cutoff
+
+
+## one attempted adjustment - still doesn't match
+# zz = zz[which(zz > -4.1 & zz < 4.1)]
+# hist(zz, breaks = 100)
+
+## another attempted adjustment
+zz = -zz
+
+## another attempted adjustment: (combined with above seems to work)
+zz[which(zz <= -4.1)] = -4.1
+zz[which(zz >= 4.1)] = 4.1
+hist(zz, breaks = 100)
+
+### re-calculate z-statistics
+# hiv_raw = log(get(load(file.path('/Users/valeriewelty/Dropbox/Vandy/SEDS Lab Group/SEDSLab/LSI Book/Data and Programs', 'hivdata.Rda'))), base = exp(1))
+# tt = apply(hiv_raw, 1, FUN=function(x) t.test(x[1:4], x[5:8], var.equal = TRUE)$statistic)
+# pp = pt(tt, df = 6)
+# # pp = apply(hiv_raw, 1, FUN=function(x) t.test(x[1:4], x[5:8], var.equal = TRUE)$p.value)
+# zz = qnorm(pp)
+# hist(zz, breaks = 100)
+
+## one attempted adjustment: 
+# zz = zz[which(zz > -4.1 & zz < 4.1)]
+# hist(zz, breaks = 100)
+
+## another attempted adjustment:
+# zz[which(zz <= -4.1)] = -4.1
+# zz[which(zz >= 4.1)] = 4.1
+# hist(zz, breaks = 100)
+  
+```
+
+```{r}
+# p. 75
+K = 90
+d = 0.1
+J = 7
+breaks = seq(-4.5, 4.5, d)
+length(breaks)-1 == K
+```
+
+```{r}
+results=locfdr(zz=zz, bre=K, df=J, pct=pct, pct0=pct0, nulltype=2, type=1)
+  # nulltype = 2 uses central matching in fitting f0(z)
+  # type = 0 uses ns in fitting f(z)
+results$fp0
+```
+
+
+```{r}
+alpha = (1-pct0)-pct0
+zz_alpha = sort(zz)[(pct0*length(zz)):((1-pct0)*length(zz))]
+  length(zz_alpha)/length(zz)
+
+h = hist(zz_alpha, breaks=breaks, plot=F)
+
+# Lindsey's method
+Zk = h$breaks
+yk = h$counts
+xk = h$mids
+
+fit = glm(yk ~ poly(xk, J, raw=F), family="poisson")
+# fit = glm(yk ~ poly(xk, 2, raw=T), family="poisson")
+# fit = glm(yk ~ poly(xk, J, raw=T), family="poisson")
+# fit = glm(yk ~ splines::ns(xk, df=J), family="poisson")
+
+beta1 = fit$coefficients[2]
+beta2 = fit$coefficients[3]
+beta0 = NULL
+
+( delta0 = beta1*(-1/(2*beta2)) )
+( sigma0 = sqrt(-1/(2*beta2)) )
+( pi0 = NULL )
+
+```
+
+<!-- 
+### Central Matching Estimation for $\delta_0 = 0$
+
+Now, we take a similar approach but instead we require that the null distribution have mean 0, while allowing the variance to differ, i.e. let $f_0(z) \sim N(0, \sigma_0^2)$. 
+-->
+
