@@ -345,9 +345,6 @@ f(z) &amp; = \pi_0 f_0(z) + (1-\pi_0) \cdot 0 \\
 &amp; = \exp \left[\beta_0 + \frac{1}{2} \left( \log \left(2\pi \left( -\frac{1}{2 \beta_2} \right) \right) + \beta_1^2 \left( -\frac{1}{2 \beta_2} \right) \right)  \right] \\
 &amp; = \exp \left[ \beta_0 + \frac{1}{2} \left( \log (-\pi) - \log (\beta_2) - \frac{\beta_1^2}{2 \beta_2} \right) \right]
 \end{align}\]</span>
-<!-- 
-**Question: while in section 6.2, Efron makes references to the notation used in section 5.2 (i.e. "estimating $(\beta_0, \beta_2, \beta_3)$ from the histogram counts $y_k$ (5.12) around $z=0$" and "The quadratic approximation $\log \widehat{f}_{\pi 0}(z) = \widehat{\beta}_0 + \widehat{\beta}_1 z + \widehat{\beta}_2 z^2$ was computed as the least square fit to $\log \widehat{f}(z)$ over the central 50% of the $z$-values (with the calculation discretized as in section 5.2)"), it is not 100% clear whether we actually use Lindsey's method, or whether we use some other least squares fit approach (not a Poisson model fit) although the discretization used in the approach is the same as in 5.2?
--->
 <pre class="r"><code>library(dplyr)</code></pre>
 <pre><code>## 
 ## Attaching package: &#39;dplyr&#39;</code></pre>
@@ -370,7 +367,7 @@ pct0 = 1/4 # &lt;- default ## proportion of z-score distr used in fitting null d
 # zz = zz[which(zz &gt; -4.1 &amp; zz &lt; 4.1)]
 # hist(zz, breaks = 100)
 
-## another attempted adjustment
+## another attempted adjustment (combined with below seems to work)
 zz = -zz
 
 ## another attempted adjustment: (combined with above seems to work)
@@ -403,8 +400,9 @@ length(breaks)-1 == K</code></pre>
 <pre><code>## [1] TRUE</code></pre>
 <pre class="r"><code>results=locfdr(zz=zz, bre=K, df=J, pct=pct, pct0=pct0, nulltype=2, type=1)</code></pre>
 <p><img src="lsi-6.2-vfw_files/figure-html/unnamed-chunk-3-1.png" width="672" /></p>
-<pre class="r"><code>  # nulltype = 2 uses central matching in fitting f0(z)
-  # type = 0 uses ns in fitting f(z)
+<pre class="r"><code>  # to use quadratic assumption, should be using df=2, but the default of 7 produces matching results
+  # nulltype = 2 uses central matching in fitting f0(z)
+  # type = 0 uses ns in fitting f(z); type = 1 uses poly in fitting f(z)
 results$fp0</code></pre>
 <pre><code>##            delta      sigma          p0
 ## thest 0.00000000 1.00000000 1.195015162
@@ -413,8 +411,9 @@ results$fp0</code></pre>
 ## mleSD 0.01228385 0.01483100 0.008933865
 ## cmest 0.12295193 0.75826229 0.928265602
 ## cmeSD 0.01532833 0.01232761 0.006680987</code></pre>
-<pre class="r"><code>alpha = (1-pct0)-pct0
-zz_alpha = sort(zz)[(pct0*length(zz)):((1-pct0)*length(zz))]
+<pre class="r"><code>( alpha = (1-pct0)-pct0 )</code></pre>
+<pre><code>## [1] 0.5</code></pre>
+<pre class="r"><code>zz_alpha = sort(zz)[(pct0*length(zz)):((1-pct0)*length(zz))]
   length(zz_alpha)/length(zz)</code></pre>
 <pre><code>## [1] 0.5001302</code></pre>
 <pre class="r"><code>h = hist(zz_alpha, breaks=breaks, plot=F)
@@ -424,17 +423,36 @@ Zk = h$breaks
 yk = h$counts
 xk = h$mids
 
-fit = glm(yk ~ poly(xk, J, raw=F), family=&quot;poisson&quot;)</code></pre>
+( fit = glm(yk ~ poly(xk, J, raw=F), family=&quot;poisson&quot;) )</code></pre>
 <pre><code>## Warning: glm.fit: fitted rates numerically 0 occurred</code></pre>
-<pre class="r"><code># fit = glm(yk ~ poly(xk, 2, raw=T), family=&quot;poisson&quot;)
-# fit = glm(yk ~ poly(xk, J, raw=T), family=&quot;poisson&quot;)
-# fit = glm(yk ~ splines::ns(xk, df=J), family=&quot;poisson&quot;)
+<pre><code>## 
+## Call:  glm(formula = yk ~ poly(xk, J, raw = F), family = &quot;poisson&quot;)
+## 
+## Coefficients:
+##           (Intercept)  poly(xk, J, raw = F)1  poly(xk, J, raw = F)2  
+##               -197196               -2419967               -2790240  
+## poly(xk, J, raw = F)3  poly(xk, J, raw = F)4  poly(xk, J, raw = F)5  
+##              -2112568               -1362869                -882370  
+## poly(xk, J, raw = F)6  poly(xk, J, raw = F)7  
+##               -252469                -152823  
+## 
+## Degrees of Freedom: 89 Total (i.e. Null);  82 Residual
+## Null Deviance:       15890 
+## Residual Deviance: 14.69     AIC: 121.1</code></pre>
+<pre class="r"><code># ( fit = glm(yk ~ poly(xk, 2, raw=F), family=&quot;poisson&quot;) )
+# ( fit = glm(yk ~ poly(xk, 2, raw=T), family=&quot;poisson&quot;) )
+# ( fit = glm(yk ~ poly(xk, J, raw=T), family=&quot;poisson&quot;) )
+# ( fit = glm(yk ~ splines::ns(xk, df=J), family=&quot;poisson&quot;) )
 
-beta1 = fit$coefficients[2]
-beta2 = fit$coefficients[3]
-beta0 = NULL
-
-( delta0 = beta1*(-1/(2*beta2)) )</code></pre>
+( beta1 = fit$coefficients[2] )</code></pre>
+<pre><code>## poly(xk, J, raw = F)1 
+##              -2419967</code></pre>
+<pre class="r"><code>( beta2 = fit$coefficients[3] )</code></pre>
+<pre><code>## poly(xk, J, raw = F)2 
+##              -2790240</code></pre>
+<pre class="r"><code>( beta0 = NULL )</code></pre>
+<pre><code>## NULL</code></pre>
+<pre class="r"><code>( delta0 = beta1*(-1/(2*beta2)) )</code></pre>
 <pre><code>## poly(xk, J, raw = F)1 
 ##            -0.4336487</code></pre>
 <pre class="r"><code>( sigma0 = sqrt(-1/(2*beta2)) )</code></pre>
