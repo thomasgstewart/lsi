@@ -51,16 +51,17 @@ for $z \in \mathscr{A}_0$, where
 \beta_2 & = - \frac{1}{2\sigma_0^2}. \\
 \end{align}
 
-The coefficients $(\beta_0, \beta_1, \beta_2)$ are estimated via Lindsey's method, with a $J=2$ parameter family, using only the central $\mathscr{A}_0$ proportion of $z_i$ values. More specifically, $\beta_1$ and $\beta_2$ are estimated from the Poisson regression process, and $\beta_0$ is determined from the requirement that $f(z)$ integrates to 1. That is, 
+The coefficients $(\beta_0, \beta_1, \beta_2)$ are estimated via Lindsey's method, with (supposedly) a $J=2$ parameter family, using only the central $\mathscr{A}_0$ proportion of $z_i$ values. It looks like to produce the estimates on page 99 in the HIV data example with the `locfdr` function, Efron is using the default option of $J=7$, and switches to using orthogonal polynomials. If the switching to orthogonal polynomials is true, the system of equations stated above will no longer hold? 
+
+(More specifically, $\beta_1$ and $\beta_2$ are estimated from the Poisson regression process, and $\beta_0$ is determined from the requirement that $f(z)$ integrates to 1. That is, 
 
 \begin{align}
 \beta_0 & : \\
 & \int f(z) dz = 1 \\
 & \int \exp (\beta_0 + \beta_1 z + \beta_2 z^2) dz = 1 \\
 & ... \\
-& ... 
+& ... )
 \end{align}
-
 
 
 Recall that, briefly, Lindsey's method is an algorithm based on discretizing the $z_i$ values into $K$ bins and it obtains maximum likelihood estimates for $(\beta_1, \beta_2)$ by fitting the observed number of values in each [histogram] bin ($y_k$) against the midpoint of each bin ($x_k$) via a Poisson regression (Section 5.2, p. 75). Note that $K$ and $\mathscr{A}_0$ are tuning parameters of this method. The coefficients $(\delta_0, \sigma_0, \pi_0)$ are then given by
@@ -73,23 +74,34 @@ Recall that, briefly, Lindsey's method is an algorithm based on discretizing the
 & = \exp \left[\beta_0 + \frac{1}{2} \left( \log (2\pi \sigma_0^2) + \frac{\beta_1^2 \sigma_0^4}{\sigma_0^2}  \right)  \right] \\
 & = \exp \left[\beta_0 + \frac{1}{2} \left( \log (2\pi \sigma_0^2) + \beta_1^2 \sigma_0^2  \right)  \right] \\
 & = \exp \left[\beta_0 + \frac{1}{2} \left( \log \left(2\pi \left( -\frac{1}{2 \beta_2} \right) \right) + \beta_1^2 \left( -\frac{1}{2 \beta_2} \right) \right)  \right] \\
-& = \exp \left[ \beta_0 + \frac{1}{2} \left( \log (-\pi) - \log (\beta_2) - \frac{\beta_1^2}{2 \beta_2} \right) \right]
+& = \exp \left[ \beta_0 + \frac{1}{2} \left( \log (-\pi) - \log (\beta_2) - \frac{\beta_1^2}{2 \beta_2} \right) \right],
 \end{align}
 
+as long as we are using $J=2$ with non-orthogonal polynomials. Otherwise, this system of equalities no longer holds?
+
+#### Attempt to reproduce HIV example 
+
+"In the HIV example, $n_2 = 4$ HIV-positive subjects are compared with $n_1=4$ healthy controls using cDNA microarrays  that measure expression levels for $N=7,680$ genes. Two-sample t-tests (on the logged expressions) yielded z-values as $z_i$ in (2.2)-(2.5) except now with 6 rather than 100 degrees of freedom" [Efron, p.96]. 
+
+The results from MLE and central matching (CME) are provided in the book are:
+
+| Method  | $\widehat{\delta}_0$ | $\widehat{\sigma}_0$ | $\widehat{\pi}_0$ |
+|---------|----------------------|----------------------|-------------------|
+| MLE     | 0.12                 | 0.77                 | 0.95              | 
+| CME     | 0.12                 | 0.75                 | 0.93              | 
+
+
+Let's begin this long journey towards reproducing the results... 
 
 ```{r}
-library(dplyr)
 library(locfdr)
 
 zz = get(data(hivdata)) ## z-scores ## length = 7,680
-  hist(zz, breaks = 100)
-pct = 0 # <- default ## excluded tail proportion of z-scores when fitting f(z)
-pct0 = 1/4 # <- default ## proportion of z-score distr used in fitting null density by central matching; if vector, provides lower and upper tail cutoffs, and if scalar, provides lower tail cutoff
-
+  hist(zz, breaks = 100, main='original zz from hivdata from locfdr')
 
 ## one attempted adjustment - still doesn't match
 # zz = zz[which(zz > -4.1 & zz < 4.1)]
-# hist(zz, breaks = 100)
+# hist(zz, breaks = 100, main='truncated zz from hivdata from locfdr')
 
 ## another attempted adjustment (combined with below seems to work)
 zz = -zz
@@ -97,24 +109,35 @@ zz = -zz
 ## another attempted adjustment: (combined with above seems to work)
 zz[which(zz <= -4.1)] = -4.1
 zz[which(zz >= 4.1)] = 4.1
-hist(zz, breaks = 100)
+hist(zz, breaks = 100, main='squashed -zz from hivdata from locfdr')
+# hist(zz, breaks = 100, main='squashed zz from hivdata from locfdr')
 
-### re-calculate z-statistics
+
+###########################################################################################
+### alternately: 
+### re-calculate z-statistics from data in Dropbox
+###########################################################################################
+
 # hiv_raw = log(get(load(file.path('/Users/valeriewelty/Dropbox/Vandy/SEDS Lab Group/SEDSLab/LSI Book/Data and Programs', 'hivdata.Rda'))), base = exp(1))
 # tt = apply(hiv_raw, 1, FUN=function(x) t.test(x[1:4], x[5:8], var.equal = TRUE)$statistic)
 # pp = pt(tt, df = 6)
 # # pp = apply(hiv_raw, 1, FUN=function(x) t.test(x[1:4], x[5:8], var.equal = TRUE)$p.value)
 # zz = qnorm(pp)
-# hist(zz, breaks = 100)
+# hist(zz, breaks = 100, main='original zz from calculated tests of hivdata from dropbox')
 
 ## one attempted adjustment: 
 # zz = zz[which(zz > -4.1 & zz < 4.1)]
-# hist(zz, breaks = 100)
+# hist(zz, breaks = 100, main='truncated zz from calculated tests of hivdata from dropbox')
+
+## another attempted adjustment:
+# zz = - zz
+
 
 ## another attempted adjustment:
 # zz[which(zz <= -4.1)] = -4.1
 # zz[which(zz >= 4.1)] = 4.1
-# hist(zz, breaks = 100)
+# hist(zz, breaks = 100, main='squashed -zz from calculated tests of hivdata from dropbox')
+# # hist(zz, breaks = 100, main='squashed zz from calculated tests of hivdata from dropbox')
   
 ```
 
@@ -122,14 +145,17 @@ hist(zz, breaks = 100)
 # p. 75
 K = 90
 d = 0.1
-J = 7
+J = 7  # to use quadratic assumption, should be using df=2, but the default of 7 for locfdr produces approximately matching results
 breaks = seq(-4.5, 4.5, d)
 length(breaks)-1 == K
+
+pct = 0 # <- default ## excluded tail proportion of z-scores when fitting f(z)
+pct0 = 1/4 # <- default ## proportion of z-score distr used in fitting null density by central matching; if vector, provides lower and upper tail cutoffs, and if scalar, provides lower tail cutoff
+
 ```
 
 ```{r}
 results=locfdr(zz=zz, bre=K, df=J, pct=pct, pct0=pct0, nulltype=2, type=1)
-  # to use quadratic assumption, should be using df=2, but the default of 7 produces matching results
   # nulltype = 2 uses central matching in fitting f0(z)
   # type = 0 uses ns in fitting f(z); type = 1 uses poly in fitting f(z)
 results$fp0

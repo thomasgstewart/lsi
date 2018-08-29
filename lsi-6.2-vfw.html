@@ -326,13 +326,14 @@ f(z) &amp; = \pi_0 f_0(z) + (1-\pi_0) \cdot 0 \\
 \beta_1 &amp; = \frac{\delta_0}{\sigma_0^2} \\
 \beta_2 &amp; = - \frac{1}{2\sigma_0^2}. \\
 \end{align}\]</span>
-<p>The coefficients <span class="math inline">\((\beta_0, \beta_1, \beta_2)\)</span> are estimated via Lindsey’s method, with a <span class="math inline">\(J=2\)</span> parameter family, using only the central <span class="math inline">\(\mathscr{A}_0\)</span> proportion of <span class="math inline">\(z_i\)</span> values. More specifically, <span class="math inline">\(\beta_1\)</span> and <span class="math inline">\(\beta_2\)</span> are estimated from the Poisson regression process, and <span class="math inline">\(\beta_0\)</span> is determined from the requirement that <span class="math inline">\(f(z)\)</span> integrates to 1. That is,</p>
+<p>The coefficients <span class="math inline">\((\beta_0, \beta_1, \beta_2)\)</span> are estimated via Lindsey’s method, with (supposedly) a <span class="math inline">\(J=2\)</span> parameter family, using only the central <span class="math inline">\(\mathscr{A}_0\)</span> proportion of <span class="math inline">\(z_i\)</span> values. It looks like to produce the estimates on page 99 in the HIV data example with the <code>locfdr</code> function, Efron is using the default option of <span class="math inline">\(J=7\)</span>, and switches to using orthogonal polynomials. If the switching to orthogonal polynomials is true, the system of equations stated above will no longer hold?</p>
+<p>(More specifically, <span class="math inline">\(\beta_1\)</span> and <span class="math inline">\(\beta_2\)</span> are estimated from the Poisson regression process, and <span class="math inline">\(\beta_0\)</span> is determined from the requirement that <span class="math inline">\(f(z)\)</span> integrates to 1. That is,</p>
 <span class="math display">\[\begin{align}
 \beta_0 &amp; : \\
 &amp; \int f(z) dz = 1 \\
 &amp; \int \exp (\beta_0 + \beta_1 z + \beta_2 z^2) dz = 1 \\
 &amp; ... \\
-&amp; ... 
+&amp; ... )
 \end{align}\]</span>
 <p>Recall that, briefly, Lindsey’s method is an algorithm based on discretizing the <span class="math inline">\(z_i\)</span> values into <span class="math inline">\(K\)</span> bins and it obtains maximum likelihood estimates for <span class="math inline">\((\beta_1, \beta_2)\)</span> by fitting the observed number of values in each [histogram] bin (<span class="math inline">\(y_k\)</span>) against the midpoint of each bin (<span class="math inline">\(x_k\)</span>) via a Poisson regression (Section 5.2, p. 75). Note that <span class="math inline">\(K\)</span> and <span class="math inline">\(\mathscr{A}_0\)</span> are tuning parameters of this method. The coefficients <span class="math inline">\((\delta_0, \sigma_0, \pi_0)\)</span> are then given by</p>
 <span class="math display">\[\begin{align}
@@ -343,29 +344,46 @@ f(z) &amp; = \pi_0 f_0(z) + (1-\pi_0) \cdot 0 \\
 &amp; = \exp \left[\beta_0 + \frac{1}{2} \left( \log (2\pi \sigma_0^2) + \frac{\beta_1^2 \sigma_0^4}{\sigma_0^2}  \right)  \right] \\
 &amp; = \exp \left[\beta_0 + \frac{1}{2} \left( \log (2\pi \sigma_0^2) + \beta_1^2 \sigma_0^2  \right)  \right] \\
 &amp; = \exp \left[\beta_0 + \frac{1}{2} \left( \log \left(2\pi \left( -\frac{1}{2 \beta_2} \right) \right) + \beta_1^2 \left( -\frac{1}{2 \beta_2} \right) \right)  \right] \\
-&amp; = \exp \left[ \beta_0 + \frac{1}{2} \left( \log (-\pi) - \log (\beta_2) - \frac{\beta_1^2}{2 \beta_2} \right) \right]
+&amp; = \exp \left[ \beta_0 + \frac{1}{2} \left( \log (-\pi) - \log (\beta_2) - \frac{\beta_1^2}{2 \beta_2} \right) \right],
 \end{align}\]</span>
-<pre class="r"><code>library(dplyr)</code></pre>
-<pre><code>## 
-## Attaching package: &#39;dplyr&#39;</code></pre>
-<pre><code>## The following objects are masked from &#39;package:stats&#39;:
-## 
-##     filter, lag</code></pre>
-<pre><code>## The following objects are masked from &#39;package:base&#39;:
-## 
-##     intersect, setdiff, setequal, union</code></pre>
+<p>as long as we are using <span class="math inline">\(J=2\)</span> with non-orthogonal polynomials. Otherwise, this system of equalities no longer holds?</p>
+<div id="attempt-to-reproduce-hiv-example" class="section level4">
+<h4>Attempt to reproduce HIV example</h4>
+<p>“In the HIV example, <span class="math inline">\(n_2 = 4\)</span> HIV-positive subjects are compared with <span class="math inline">\(n_1=4\)</span> healthy controls using cDNA microarrays that measure expression levels for <span class="math inline">\(N=7,680\)</span> genes. Two-sample t-tests (on the logged expressions) yielded z-values as <span class="math inline">\(z_i\)</span> in (2.2)-(2.5) except now with 6 rather than 100 degrees of freedom” [Efron, p.96].</p>
+<p>The results from MLE and central matching (CME) are provided in the book are:</p>
+<table>
+<thead>
+<tr class="header">
+<th>Method</th>
+<th><span class="math inline">\(\widehat{\delta}_0\)</span></th>
+<th><span class="math inline">\(\widehat{\sigma}_0\)</span></th>
+<th><span class="math inline">\(\widehat{\pi}_0\)</span></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>MLE</td>
+<td>0.12</td>
+<td>0.77</td>
+<td>0.95</td>
+</tr>
+<tr class="even">
+<td>CME</td>
+<td>0.12</td>
+<td>0.75</td>
+<td>0.93</td>
+</tr>
+</tbody>
+</table>
+<p>Let’s begin this long journey towards reproducing the results…</p>
 <pre class="r"><code>library(locfdr)
 
 zz = get(data(hivdata)) ## z-scores ## length = 7,680
-  hist(zz, breaks = 100)</code></pre>
+  hist(zz, breaks = 100, main=&#39;original zz from hivdata from locfdr&#39;)</code></pre>
 <p><img src="lsi-6.2-vfw_files/figure-html/unnamed-chunk-1-1.png" width="672" /></p>
-<pre class="r"><code>pct = 0 # &lt;- default ## excluded tail proportion of z-scores when fitting f(z)
-pct0 = 1/4 # &lt;- default ## proportion of z-score distr used in fitting null density by central matching; if vector, provides lower and upper tail cutoffs, and if scalar, provides lower tail cutoff
-
-
-## one attempted adjustment - still doesn&#39;t match
+<pre class="r"><code>## one attempted adjustment - still doesn&#39;t match
 # zz = zz[which(zz &gt; -4.1 &amp; zz &lt; 4.1)]
-# hist(zz, breaks = 100)
+# hist(zz, breaks = 100, main=&#39;truncated zz from hivdata from locfdr&#39;)
 
 ## another attempted adjustment (combined with below seems to work)
 zz = -zz
@@ -373,35 +391,48 @@ zz = -zz
 ## another attempted adjustment: (combined with above seems to work)
 zz[which(zz &lt;= -4.1)] = -4.1
 zz[which(zz &gt;= 4.1)] = 4.1
-hist(zz, breaks = 100)</code></pre>
+hist(zz, breaks = 100, main=&#39;squashed -zz from hivdata from locfdr&#39;)</code></pre>
 <p><img src="lsi-6.2-vfw_files/figure-html/unnamed-chunk-1-2.png" width="672" /></p>
-<pre class="r"><code>### re-calculate z-statistics
+<pre class="r"><code># hist(zz, breaks = 100, main=&#39;squashed zz from hivdata from locfdr&#39;)
+
+
+###########################################################################################
+### alternately: 
+### re-calculate z-statistics from data in Dropbox
+###########################################################################################
+
 # hiv_raw = log(get(load(file.path(&#39;/Users/valeriewelty/Dropbox/Vandy/SEDS Lab Group/SEDSLab/LSI Book/Data and Programs&#39;, &#39;hivdata.Rda&#39;))), base = exp(1))
 # tt = apply(hiv_raw, 1, FUN=function(x) t.test(x[1:4], x[5:8], var.equal = TRUE)$statistic)
 # pp = pt(tt, df = 6)
 # # pp = apply(hiv_raw, 1, FUN=function(x) t.test(x[1:4], x[5:8], var.equal = TRUE)$p.value)
 # zz = qnorm(pp)
-# hist(zz, breaks = 100)
+# hist(zz, breaks = 100, main=&#39;original zz from calculated tests of hivdata from dropbox&#39;)
 
 ## one attempted adjustment: 
 # zz = zz[which(zz &gt; -4.1 &amp; zz &lt; 4.1)]
-# hist(zz, breaks = 100)
+# hist(zz, breaks = 100, main=&#39;truncated zz from calculated tests of hivdata from dropbox&#39;)
+
+## another attempted adjustment:
+# zz = - zz
+
 
 ## another attempted adjustment:
 # zz[which(zz &lt;= -4.1)] = -4.1
 # zz[which(zz &gt;= 4.1)] = 4.1
-# hist(zz, breaks = 100)</code></pre>
+# hist(zz, breaks = 100, main=&#39;squashed -zz from calculated tests of hivdata from dropbox&#39;)
+# # hist(zz, breaks = 100, main=&#39;squashed zz from calculated tests of hivdata from dropbox&#39;)</code></pre>
 <pre class="r"><code># p. 75
 K = 90
 d = 0.1
-J = 7
+J = 7  # to use quadratic assumption, should be using df=2, but the default of 7 for locfdr produces approximately matching results
 breaks = seq(-4.5, 4.5, d)
 length(breaks)-1 == K</code></pre>
 <pre><code>## [1] TRUE</code></pre>
+<pre class="r"><code>pct = 0 # &lt;- default ## excluded tail proportion of z-scores when fitting f(z)
+pct0 = 1/4 # &lt;- default ## proportion of z-score distr used in fitting null density by central matching; if vector, provides lower and upper tail cutoffs, and if scalar, provides lower tail cutoff</code></pre>
 <pre class="r"><code>results=locfdr(zz=zz, bre=K, df=J, pct=pct, pct0=pct0, nulltype=2, type=1)</code></pre>
 <p><img src="lsi-6.2-vfw_files/figure-html/unnamed-chunk-3-1.png" width="672" /></p>
-<pre class="r"><code>  # to use quadratic assumption, should be using df=2, but the default of 7 produces matching results
-  # nulltype = 2 uses central matching in fitting f0(z)
+<pre class="r"><code>  # nulltype = 2 uses central matching in fitting f0(z)
   # type = 0 uses ns in fitting f(z); type = 1 uses poly in fitting f(z)
 results$fp0</code></pre>
 <pre><code>##            delta      sigma          p0
@@ -465,6 +496,7 @@ xk = h$mids
 
 Now, we take a similar approach but instead we require that the null distribution have mean 0, while allowing the variance to differ, i.e. let $f_0(z) \sim N(0, \sigma_0^2)$. 
 -->
+</div>
 </div>
 </div>
 
